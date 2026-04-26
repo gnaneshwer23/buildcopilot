@@ -2,15 +2,13 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Sparkles } from "lucide-react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 type RoleKey = "Product Manager" | "Architect / Tech Lead" | "Business Analyst" | "Delivery Manager";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 const MODULES = [
   { label: "Capture",   color: "#7C3AED" },
-  { label: "Strategy",  color: "#2563EB" },
+  { label: "Strategy",  color: "#3D76F4" },
   { label: "Draft",     color: "#D97706" },
   { label: "Breakdown", color: "#EA580C" },
   { label: "Build",     color: "#059669" },
@@ -22,115 +20,81 @@ const ROLES: Array<{
   id: RoleKey;
   tagline: string;
   highlights: string[];
-  iconColor: string;
-  bgColor: string;
-  borderColor: string;
-  activeBorder: string;
+  gradient: string;
+  iconBg: string;
   icon: React.ReactNode;
 }> = [
   {
     id: "Product Manager",
-    tagline: "Turn ideas into PRDs in minutes, not days.",
-    highlights: [
-      "AI-powered PRD, BRD & FRD generation",
-      "Now / Next / Later roadmap builder",
-      "Stakeholder review & approval workflows",
-      "Product strategy with market positioning",
-    ],
-    iconColor: "text-blue-600",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-100",
-    activeBorder: "border-blue-500",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-    ),
+    tagline: "Turn ideas into PRDs in minutes.",
+    highlights: ["AI-powered PRD, BRD & FRD", "Now / Next / Later roadmap", "Stakeholder workflows", "Market positioning"],
+    gradient: "from-[#3D76F4] to-[#54AEF5]",
+    iconBg: "#EEF0FD",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3D76F4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
   },
   {
     id: "Architect / Tech Lead",
     tagline: "Auto-generate architecture from requirements.",
-    highlights: [
-      "Mermaid architecture diagrams from PRDs",
-      "Tech spec generated from requirements",
-      "Code → requirement traceability",
-      "Non-functional requirement tracking",
-    ],
-    iconColor: "text-violet-600",
-    bgColor: "bg-violet-50",
-    borderColor: "border-violet-100",
-    activeBorder: "border-violet-500",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-    ),
+    highlights: ["Mermaid architecture diagrams", "Tech spec generation", "Code traceability", "NFR tracking"],
+    gradient: "from-[#7C3AED] to-[#CACEFA]",
+    iconBg: "#F3F0FF",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>,
   },
   {
     id: "Business Analyst",
     tagline: "Requirements that trace all the way to tests.",
-    highlights: [
-      "FRD / BRD with acceptance criteria",
-      "User story mapping from requirements",
-      "Full traceability matrix (req → test → result)",
-      "Gap detection and coverage reporting",
-    ],
-    iconColor: "text-emerald-600",
-    bgColor: "bg-emerald-50",
-    borderColor: "border-emerald-100",
-    activeBorder: "border-emerald-500",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-    ),
+    highlights: ["FRD / BRD with AC", "User story mapping", "Traceability matrix", "Gap detection"],
+    gradient: "from-[#059669] to-[#34D399]",
+    iconBg: "#ECFDF5",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>,
   },
   {
     id: "Delivery Manager",
-    tagline: "See every sprint risk before it becomes a blocker.",
-    highlights: [
-      "Sprint velocity and burndown tracking",
-      "Risk prediction with AI-flagged blockers",
-      "Jira / Linear sync with scheduling",
-      "Executive stakeholder report generation",
-    ],
-    iconColor: "text-amber-600",
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-100",
-    activeBorder: "border-amber-500",
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-    ),
+    tagline: "See sprint risks before they become blockers.",
+    highlights: ["Sprint velocity tracking", "AI risk prediction", "Jira / Linear sync", "Executive reports"],
+    gradient: "from-[#D97706] to-[#FBBF24]",
+    iconBg: "#FFFBEB",
+    icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>,
   },
 ];
 
 const PROJECT_TAGS = ["Healthcare AI", "FinTech Platform", "SaaS Product", "Internal Tool", "Mobile App", "E-commerce"];
 
-// ─── Right Panel Components ───────────────────────────────────────────────────
+// ── Right panel ───────────────────────────────────────────────────────────────
 
 function PanelLoopOverview() {
   return (
-    <div className="flex flex-col h-full justify-center px-10 py-12">
-      <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-slate-400 mb-8">
-        The BuildCopilot Intelligence Loop
+    <div
+      className="h-full flex flex-col justify-center px-10 py-12"
+      style={{ background: "linear-gradient(150deg, #3D76F4 0%, #54AEF5 55%, #CACEFA 100%)" }}
+    >
+      <p className="text-xs font-bold uppercase tracking-[0.2em] mb-8" style={{ color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-mono)" }}>
+        Intelligence Loop
       </p>
-      <div className="space-y-2.5">
+      <div className="space-y-3">
         {MODULES.map((mod, i) => (
           <motion.div
             key={mod.label}
-            className="flex items-center gap-3"
-            initial={{ opacity: 0, x: 12 }}
+            className="flex items-center gap-3 rounded-2xl px-4 py-3"
+            style={{
+              background: i === 0 ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.1)",
+              border: i === 0 ? "1px solid rgba(255,255,255,0.3)" : "1px solid rgba(255,255,255,0.12)",
+              backdropFilter: "blur(8px)",
+            }}
+            initial={{ opacity: 0, x: 16 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.35, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold shrink-0"
-              style={{ backgroundColor: `${mod.color}15`, border: `1px solid ${mod.color}30` }}
-            >
-              <span style={{ color: mod.color }}>{String(i + 1).padStart(2, "0")}</span>
-            </div>
-            <div className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-2.5 shadow-sm">
-              <span className="text-sm font-semibold" style={{ color: mod.color }}>{mod.label}</span>
-            </div>
+            <span className="w-2 h-2 rounded-full shrink-0 bg-white opacity-80" />
+            <span className="text-sm font-semibold text-white">{mod.label}</span>
+            <span className="ml-auto text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.5)" }}>
+              {i === 0 ? "start" : `layer ${i + 1}`}
+            </span>
           </motion.div>
         ))}
       </div>
-      <p className="mt-8 text-xs text-slate-400 leading-relaxed">
-        Every layer auto-links to the next. Idea&thinsp;→&thinsp;validated code, fully traced.
+      <p className="mt-8 text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+        Every layer auto-links to the next. Idea&thinsp;&rarr;&thinsp;validated code, fully traced.
       </p>
     </div>
   );
@@ -138,152 +102,143 @@ function PanelLoopOverview() {
 
 function PanelRoleSelect({ selectedRole }: { selectedRole: RoleKey | "" }) {
   const role = ROLES.find((r) => r.id === selectedRole);
-
-  if (!role) {
-    return (
-      <div className="flex flex-col h-full justify-center px-10 py-12">
-        <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-slate-400 mb-7">
-          Built for your whole team
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          {ROLES.map((r) => (
-            <div key={r.id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className={`w-8 h-8 rounded-lg ${r.bgColor} ${r.iconColor} flex items-center justify-center mb-3`}>
-                {r.icon}
-              </div>
-              <p className="text-xs font-bold text-slate-800">{r.id.split(" / ")[0]}</p>
-              <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{r.tagline}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <motion.div
-      key={role.id}
-      className="flex flex-col h-full justify-center px-10 py-12"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    <div
+      className="h-full flex flex-col justify-center px-10 py-12"
+      style={{ background: "linear-gradient(150deg, #3D76F4 0%, #54AEF5 55%, #CACEFA 100%)" }}
     >
-      <div className={`inline-flex items-center gap-2.5 w-fit rounded-lg ${role.bgColor} ${role.iconColor} px-3 py-2 mb-7 border ${role.borderColor}`}>
-        {role.icon}
-        <span className="text-sm font-bold">{role.id}</span>
-      </div>
-      <p className="text-lg font-bold text-slate-900 mb-7 leading-snug">{role.tagline}</p>
-      <ul className="space-y-3.5" aria-label={`${role.id} features`}>
-        {role.highlights.map((h) => (
-          <li key={h} className="flex items-start gap-3 text-sm text-slate-600">
-            <span className={`mt-0.5 shrink-0 w-5 h-5 rounded-full ${role.bgColor} ${role.iconColor} flex items-center justify-center border ${role.borderColor}`}>
-              <Check className="h-3 w-3" />
-            </span>
-            {h}
-          </li>
-        ))}
-      </ul>
-    </motion.div>
+      {!role ? (
+        <>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] mb-8" style={{ color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-mono)" }}>
+            Built for your whole team
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {ROLES.map((r) => (
+              <div
+                key={r.id}
+                className="rounded-2xl p-4"
+                style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)", backdropFilter: "blur(8px)" }}
+              >
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style={{ background: r.iconBg }}>
+                  {r.icon}
+                </div>
+                <p className="text-xs font-bold text-white leading-snug">{r.id.split(" / ")[0]}</p>
+                <p className="text-[10px] mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>{r.tagline}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <motion.div
+          key={role.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="rounded-2xl p-4 mb-7 flex items-center gap-3" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(8px)" }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: role.iconBg }}>
+              {role.icon}
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">{role.id}</p>
+              <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.65)" }}>{role.tagline}</p>
+            </div>
+          </div>
+          <ul className="space-y-3">
+            {role.highlights.map((h) => (
+              <li key={h} className="flex items-center gap-3 text-sm text-white">
+                <span className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.3)" }}>
+                  <Check className="h-3 w-3 text-white" />
+                </span>
+                {h}
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
+    </div>
   );
 }
 
 function PanelWorkspacePreview({ name, role }: { name: string; role: RoleKey | "" }) {
   const shortName = name.split(" ")[0] || "You";
-  const roleObj = ROLES.find((r) => r.id === role);
-
   return (
-    <motion.div
-      className="flex flex-col h-full justify-center px-10 py-12"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    <div
+      className="h-full flex flex-col justify-center px-10 py-12"
+      style={{ background: "linear-gradient(150deg, #3D76F4 0%, #54AEF5 55%, #CACEFA 100%)" }}
     >
-      <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-slate-400 mb-7">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] mb-7" style={{ color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-mono)" }}>
         Your workspace preview
       </p>
-
-      {/* Mini workspace mock */}
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+      <motion.div
+        className="rounded-2xl overflow-hidden"
+        style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.22)", backdropFilter: "blur(12px)" }}
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      >
         {/* Topbar */}
-        <div className="flex items-center gap-2.5 border-b border-slate-100 bg-slate-50 px-4 py-3">
-          <div className="w-5 h-5 rounded-md bg-blue-600 flex items-center justify-center">
-            <svg width="9" height="9" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+        <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.15)" }}>
+          <div className="w-5 h-5 rounded-lg gradient-primary flex items-center justify-center">
+            <svg width="9" height="9" viewBox="0 0 14 14" fill="none"><path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
-          <span className="text-[11px] font-semibold text-slate-500">BuildCopilot</span>
-          <span className="ml-auto flex items-center gap-1 text-[10px] text-slate-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Live
+          <span className="text-[11px] font-semibold text-white">BuildCopilot</span>
+          <span className="ml-auto flex items-center gap-1 text-[10px]" style={{ color: "rgba(255,255,255,0.6)" }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> {shortName}
           </span>
         </div>
-
-        {/* Welcome strip */}
-        <div className="px-4 py-3 border-b border-slate-100 bg-blue-50">
-          <p className="text-xs font-bold text-slate-800">Welcome, {shortName}</p>
-          <p className="text-[10px] text-slate-500 mt-0.5">{role || "Your role"} workspace</p>
+        {/* Welcome */}
+        <div className="px-4 py-3" style={{ background: "rgba(255,255,255,0.1)", borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+          <p className="text-xs font-bold text-white">Welcome, {shortName}</p>
+          <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.6)" }}>{role || "Your role"} workspace</p>
         </div>
-
         {/* Layout */}
         <div className="flex">
-          {/* Mini sidebar */}
-          <div className="w-24 border-r border-slate-100 bg-slate-50 p-2.5 space-y-1">
+          <div className="w-24 p-2.5 space-y-1" style={{ borderRight: "1px solid rgba(255,255,255,0.12)" }}>
             {MODULES.slice(0, 5).map((m, i) => (
-              <div
-                key={m.label}
-                className="rounded-md px-2 py-1.5 text-[9px] font-semibold"
-                style={i === 0 ? { color: m.color, backgroundColor: `${m.color}12` } : { color: "#94A3B8" }}
-              >
+              <div key={m.label} className="rounded-lg px-2 py-1.5 text-[9px] font-semibold"
+                   style={i === 0 ? { background: "rgba(255,255,255,0.2)", color: "white" } : { color: "rgba(255,255,255,0.5)" }}>
                 {m.label}
               </div>
             ))}
           </div>
-
-          {/* Content skeleton */}
           <div className="flex-1 p-4 space-y-2.5">
-            <div className="h-2 rounded-full bg-slate-200 w-4/5" />
-            <div className="h-1.5 rounded-full bg-slate-100 w-3/5" />
-            <div className="h-1.5 rounded-full bg-slate-100 w-2/3" />
-            <div className="mt-3 h-7 rounded-lg bg-blue-50 border border-blue-100 w-full" />
-            <div className="mt-1 grid grid-cols-2 gap-1.5">
-              <div className="h-6 rounded-md bg-slate-50 border border-slate-100" />
-              <div className="h-6 rounded-md bg-slate-50 border border-slate-100" />
-            </div>
+            <div className="h-2 rounded-full" style={{ background: "rgba(255,255,255,0.25)", width: "75%" }} />
+            <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.15)", width: "55%" }} />
+            <div className="h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.15)", width: "65%" }} />
+            <div className="mt-3 h-7 rounded-xl" style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }} />
           </div>
         </div>
-      </div>
-
-      {roleObj && (
-        <p className="mt-6 text-xs text-slate-400 leading-relaxed">
-          AI tuned for <span className="text-slate-700 font-semibold">{role}</span> — {roleObj.tagline}
-        </p>
-      )}
-    </motion.div>
+      </motion.div>
+      <p className="mt-6 text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+        {role ? `AI tuned for ${role} — fully personalised.` : "Select your role to personalise."}
+      </p>
+    </div>
   );
 }
 
-// ─── Launch Screen ────────────────────────────────────────────────────────────
+// ── Launch screen ─────────────────────────────────────────────────────────────
 
 function LaunchScreen({ role }: { role: string }) {
   return (
-    <div className="min-h-dvh bg-white flex flex-col items-center justify-center gap-7">
-      <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
-        <svg width="22" height="22" viewBox="0 0 14 14" fill="none">
-          <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <div className="min-h-dvh flex flex-col items-center justify-center gap-7" style={{ backgroundColor: "#F4F7FE" }}>
+      <div className="w-16 h-16 rounded-3xl gradient-primary flex items-center justify-center shadow-[0_8px_32px_rgba(61,118,244,0.35)] animate-pulse-glow">
+        <svg width="24" height="24" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
       <div className="text-center">
-        <p className="text-slate-900 font-bold text-xl tracking-tight">Configuring your workspace…</p>
-        <p className="text-slate-400 text-sm mt-1.5">AI tuned for {role || "your role"}</p>
+        <p className="font-bold text-xl tracking-tight" style={{ color: "#0F1433" }}>Configuring your workspace…</p>
+        <p className="text-sm mt-1.5" style={{ color: "#64748B" }}>AI tuned for {role || "your role"}</p>
       </div>
-      <div className="w-48 h-1 rounded-full bg-slate-200 overflow-hidden">
-        <div className="h-full bg-blue-600 rounded-full animate-load-bar" />
+      <div className="w-48 h-1.5 rounded-full overflow-hidden" style={{ background: "#EEF0FD" }}>
+        <div className="h-full rounded-full gradient-primary animate-load-bar" />
       </div>
     </div>
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 interface OnboardingProps {
   onComplete: (data: { name: string; role: string; project: string }) => void;
@@ -309,202 +264,147 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   if (launching) return <LaunchScreen role={data.role} />;
 
-  const inputClass =
-    "w-full rounded-xl border border-slate-200 bg-white px-5 py-4 text-xl font-semibold text-slate-900 outline-none placeholder:text-slate-300 focus-visible:ring-2 focus-visible:ring-blue-100 focus-visible:border-blue-600 transition-all shadow-sm";
-
-  const stepTitles = ["Who are you?", "What's your role?", "What are we building?"];
-
   return (
-    <div className="min-h-dvh bg-slate-50 text-slate-900 flex" data-testid="onboarding-wrapper">
-      {/* ── Left: Form ─────────────────────────────────── */}
-      <div className="flex-1 flex flex-col px-8 py-10 lg:px-14 lg:py-14 min-w-0 bg-white border-r border-slate-200">
-        {/* Brand */}
-        <div className="flex items-center gap-2.5 mb-14">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm">
+    <div className="min-h-dvh flex" style={{ backgroundColor: "#F4F7FE" }} data-testid="onboarding-wrapper">
+
+      {/* ── Left: Form ───────────────────────────────────── */}
+      <div className="flex-1 flex flex-col px-8 py-10 lg:px-14 lg:py-14 bg-white min-w-0">
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-14">
+          <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center shadow-[0_4px_12px_rgba(61,118,244,0.3)]">
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
-          <span className="text-base font-bold tracking-tight text-slate-900">BuildCopilot</span>
+          <span className="font-bold text-base tracking-tight" style={{ color: "#0F1433" }}>BuildCopilot</span>
         </div>
 
         {/* Step progress */}
-        <div
-          className="flex items-center gap-2 mb-12"
-          role="progressbar"
-          aria-valuenow={step}
-          aria-valuemin={1}
-          aria-valuemax={3}
-          aria-label={`Step ${step} of 3`}
-          data-testid="onboarding-progress"
-        >
+        <div className="flex items-center gap-2 mb-12" role="progressbar" aria-valuenow={step} aria-valuemin={1} aria-valuemax={3} data-testid="onboarding-progress">
           {([1, 2, 3] as const).map((s) => (
             <div
               key={s}
-              className={`h-1 rounded-full transition-all duration-500 ${s < step ? "bg-blue-300 w-6" : s === step ? "bg-blue-600 w-10" : "bg-slate-200 w-6"}`}
+              className="h-1.5 rounded-full transition-all duration-500"
+              style={{
+                width: s === step ? 40 : 24,
+                background: s < step ? "#98CDF9" : s === step ? "linear-gradient(90deg, #3D76F4, #54AEF5)" : "#EEF0FD",
+              }}
             />
           ))}
-          <span className="ml-2 text-xs font-mono text-slate-400">{step} / 3</span>
+          <span className="ml-2 text-xs font-bold" style={{ color: "#CACEFA", fontFamily: "var(--font-mono)" }}>{step} / 3</span>
         </div>
 
         <AnimatePresence mode="wait">
-          {/* ── Step 1: Name ── */}
           {step === 1 && (
-            <motion.div
-              key="step-1"
-              className="flex-1 flex flex-col"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              data-testid="onboarding-step-1"
-            >
-              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[1.08] mb-3 text-slate-900">
-                What should we<br />call you?
+            <motion.div key="s1" className="flex-1 flex flex-col"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} data-testid="onboarding-step-1">
+              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[1.07] mb-3" style={{ color: "#0F1433" }}>
+                What should<br />we call you?
               </h2>
-              <p className="text-slate-400 mb-10">We&apos;ll personalise your workspace and AI guidance.</p>
+              <p className="mb-10 text-sm" style={{ color: "#64748B" }}>We&apos;ll personalise your workspace and AI guidance.</p>
               <input
-                type="text"
-                autoFocus
-                value={data.name}
+                type="text" autoFocus value={data.name}
                 onChange={(e) => setData((d) => ({ ...d, name: e.target.value }))}
                 onKeyDown={(e) => e.key === "Enter" && data.name.trim() && setStep(2)}
                 placeholder="Your name"
-                className={inputClass}
-                aria-label="Your name"
                 data-testid="input-your-name"
+                className="w-full rounded-2xl px-5 py-4 text-xl font-semibold outline-none transition-all"
+                style={{ color: "#0F1433", background: "#F4F7FE", border: "1px solid rgba(202,206,250,0.6)" }}
+                onFocus={e => { e.target.style.borderColor = "#3D76F4"; e.target.style.boxShadow = "0 0 0 4px rgba(61,118,244,0.1)"; }}
+                onBlur={e => { e.target.style.borderColor = "rgba(202,206,250,0.6)"; e.target.style.boxShadow = "none"; }}
               />
               <div className="mt-auto pt-10">
-                <button
-                  type="button"
-                  disabled={!data.name.trim()}
-                  onClick={() => setStep(2)}
-                  data-testid="step1-continue-btn"
-                  className="inline-flex items-center gap-2.5 rounded-xl bg-blue-600 px-8 py-3.5 text-base font-bold text-white shadow-sm hover:bg-blue-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
-                >
+                <button type="button" disabled={!data.name.trim()} onClick={() => setStep(2)}
+                  data-testid="step1-continue-btn" className="btn-primary text-base px-8 py-3.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none">
                   Continue <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
             </motion.div>
           )}
 
-          {/* ── Step 2: Role ── */}
           {step === 2 && (
-            <motion.div
-              key="step-2"
-              className="flex-1 flex flex-col"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              data-testid="onboarding-step-2"
-            >
-              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[1.08] mb-3 text-slate-900">
+            <motion.div key="s2" className="flex-1 flex flex-col"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} data-testid="onboarding-step-2">
+              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[1.07] mb-3" style={{ color: "#0F1433" }}>
                 What&apos;s your<br />primary role?
               </h2>
-              <p className="text-slate-400 mb-10">
-                BuildCopilot tailors AI suggestions and dashboards to how <em>you</em> work.
+              <p className="mb-10 text-sm" style={{ color: "#64748B" }}>
+                BuildCopilot tailors AI suggestions to how you work.
               </p>
-              <div
-                className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-                role="group"
-                aria-label="Select your role"
-              >
-                {ROLES.map((role) => (
-                  <button
-                    type="button"
-                    key={role.id}
-                    aria-pressed={data.role === role.id}
-                    onClick={() => {
-                      setData((d) => ({ ...d, role: role.id }));
-                      setTimeout(() => setStep(3), 160);
-                    }}
-                    data-testid={`role-btn-${role.id.toLowerCase().replace(/[\s/]+/g, '-')}`}
-                    className={`rounded-xl border p-5 text-left transition-all duration-200 ${
-                      data.role === role.id
-                        ? `${role.activeBorder} ${role.bgColor} shadow-sm`
-                        : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
-                    }`}
-                  >
-                    <div className={`w-9 h-9 rounded-lg ${role.bgColor} ${role.iconColor} flex items-center justify-center mb-4 border ${role.borderColor}`}>
-                      {role.icon}
-                    </div>
-                    <p className="text-sm font-bold text-slate-900">{role.id}</p>
-                    <p className="text-xs text-slate-500 mt-1 leading-relaxed">{role.tagline}</p>
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" role="group">
+                {ROLES.map((role) => {
+                  const isActive = data.role === role.id;
+                  return (
+                    <button type="button" key={role.id} aria-pressed={isActive}
+                      onClick={() => { setData((d) => ({ ...d, role: role.id })); setTimeout(() => setStep(3), 160); }}
+                      data-testid={`role-btn-${role.id.toLowerCase().replace(/[\s/]+/g, '-')}`}
+                      className="rounded-2xl p-5 text-left transition-all duration-200"
+                      style={{
+                        border: isActive ? "1.5px solid #3D76F4" : "1px solid rgba(202,206,250,0.5)",
+                        background: isActive ? "linear-gradient(135deg, #EEF0FD 0%, #DCE8FD 100%)" : "white",
+                        boxShadow: isActive ? "0 4px 20px rgba(61,118,244,0.12)" : "none",
+                      }}>
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: role.iconBg }}>
+                        {role.icon}
+                      </div>
+                      <p className="text-sm font-bold" style={{ color: "#0F1433" }}>{role.id}</p>
+                      <p className="text-xs mt-1 leading-relaxed" style={{ color: "#64748B" }}>{role.tagline}</p>
+                    </button>
+                  );
+                })}
               </div>
               <div className="mt-auto pt-8">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  data-testid="step2-back-btn"
-                  className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-700 transition-colors"
-                >
+                <button type="button" onClick={() => setStep(1)} data-testid="step2-back-btn"
+                  className="inline-flex items-center gap-2 text-sm transition-colors" style={{ color: "#94A3B8" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#64748B")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#94A3B8")}>
                   <ArrowLeft className="h-4 w-4" /> Back
                 </button>
               </div>
             </motion.div>
           )}
 
-          {/* ── Step 3: Project ── */}
           {step === 3 && (
-            <motion.div
-              key="step-3"
-              className="flex-1 flex flex-col"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              data-testid="onboarding-step-3"
-            >
-              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[1.08] mb-3 text-slate-900">
+            <motion.div key="s3" className="flex-1 flex flex-col"
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} data-testid="onboarding-step-3">
+              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight leading-[1.07] mb-3" style={{ color: "#0F1433" }}>
                 What are we<br />building, {shortName}?
               </h2>
-              <p className="text-slate-400 mb-10">
-                Name your first project. You can change this anytime.
-              </p>
+              <p className="mb-10 text-sm" style={{ color: "#64748B" }}>Name your first project. You can change this anytime.</p>
               <input
-                type="text"
-                autoFocus
-                value={data.project}
+                type="text" autoFocus value={data.project}
                 onChange={(e) => setData((d) => ({ ...d, project: e.target.value }))}
                 onKeyDown={(e) => e.key === "Enter" && data.project.trim() && handleLaunch()}
                 placeholder="e.g. AI Delivery OS"
-                className={inputClass}
-                aria-label="Project name"
                 data-testid="input-project-name"
+                className="w-full rounded-2xl px-5 py-4 text-xl font-semibold outline-none transition-all"
+                style={{ color: "#0F1433", background: "#F4F7FE", border: "1px solid rgba(202,206,250,0.6)" }}
+                onFocus={e => { e.target.style.borderColor = "#3D76F4"; e.target.style.boxShadow = "0 0 0 4px rgba(61,118,244,0.1)"; }}
+                onBlur={e => { e.target.style.borderColor = "rgba(202,206,250,0.6)"; e.target.style.boxShadow = "none"; }}
               />
-              {/* Quick-select tags */}
-              <div className="mt-4 flex flex-wrap gap-2" aria-label="Suggested project types">
-                {PROJECT_TAGS.map((tag) => (
-                  <button
-                    type="button"
-                    key={tag}
-                    onClick={() => setData((d) => ({ ...d, project: tag }))}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {["Healthcare AI", "FinTech Platform", "SaaS Product", "Internal Tool", "Mobile App", "E-commerce"].map((tag) => (
+                  <button type="button" key={tag} onClick={() => setData((d) => ({ ...d, project: tag }))}
                     data-testid={`tag-${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-500 hover:border-slate-300 hover:text-slate-800 transition-all shadow-sm"
-                  >
+                    className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all"
+                    style={{ background: "#EEF0FD", color: "#3D76F4", border: "1px solid rgba(202,206,250,0.6)" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "#DCE8FD")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "#EEF0FD")}>
                     {tag}
                   </button>
                 ))}
               </div>
               <div className="mt-auto pt-10 flex items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  data-testid="step3-back-btn"
-                  className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-700 transition-colors"
-                >
+                <button type="button" onClick={() => setStep(2)} data-testid="step3-back-btn"
+                  className="inline-flex items-center gap-2 text-sm" style={{ color: "#94A3B8" }}>
                   <ArrowLeft className="h-4 w-4" /> Back
                 </button>
-                <button
-                  type="button"
-                  disabled={!data.project.trim()}
-                  onClick={handleLaunch}
+                <button type="button" disabled={!data.project.trim()} onClick={handleLaunch}
                   data-testid="launch-workspace-btn"
-                  className="inline-flex items-center gap-2.5 rounded-xl bg-blue-600 px-8 py-3.5 text-base font-bold text-white shadow-sm hover:bg-blue-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
-                >
+                  className="btn-primary text-base px-8 py-3.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none">
                   Enter Workspace <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
@@ -513,45 +413,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         </AnimatePresence>
       </div>
 
-      {/* ── Right: Contextual preview ─────────────────── */}
-      <div className="hidden lg:flex w-[420px] xl:w-[460px] shrink-0 flex-col bg-slate-50 overflow-hidden">
+      {/* ── Right: Gradient Panel ──────────────────────── */}
+      <div className="hidden lg:block w-[420px] xl:w-[460px] shrink-0 overflow-hidden">
         <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="panel-1"
-              className="h-full"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PanelLoopOverview />
-            </motion.div>
-          )}
-          {step === 2 && (
-            <motion.div
-              key="panel-2"
-              className="h-full"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PanelRoleSelect selectedRole={data.role} />
-            </motion.div>
-          )}
-          {step === 3 && (
-            <motion.div
-              key="panel-3"
-              className="h-full"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <PanelWorkspacePreview name={data.name} role={data.role} />
-            </motion.div>
-          )}
+          {step === 1 && <motion.div key="p1" className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}><PanelLoopOverview /></motion.div>}
+          {step === 2 && <motion.div key="p2" className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}><PanelRoleSelect selectedRole={data.role} /></motion.div>}
+          {step === 3 && <motion.div key="p3" className="h-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}><PanelWorkspacePreview name={data.name} role={data.role} /></motion.div>}
         </AnimatePresence>
       </div>
     </div>

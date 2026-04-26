@@ -3,100 +3,98 @@
 import React from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { Zap, Cpu, ShieldCheck, ArrowRight, ChevronRight } from "lucide-react";
+import { Zap, Cpu, ShieldCheck, ArrowRight, ChevronRight, Sparkles } from "lucide-react";
 
-interface LandingPageProps {
-  onGetStarted: () => void;
-}
+interface LandingPageProps { onGetStarted: () => void; }
 
 const features = [
   {
     icon: Zap,
     title: "Problem-to-Plan In Minutes",
     desc: "Convert rough thoughts into structured outcomes, assumptions, and measurable goals without context loss.",
-    accent: "text-blue-600",
-    bg: "bg-blue-50",
+    gradient: "from-[#3D76F4] to-[#54AEF5]",
+    bg: "from-[#EEF0FD] to-[#DCE8FD]",
   },
   {
     icon: Cpu,
     title: "Requirements With Lineage",
     desc: "Every requirement traces to strategy, then to stories, then to delivery evidence in one continuous graph.",
-    accent: "text-indigo-600",
-    bg: "bg-indigo-50",
+    gradient: "from-[#54AEF5] to-[#98CDF9]",
+    bg: "from-[#EEF5FD] to-[#DCF0FE]",
   },
   {
     icon: ShieldCheck,
     title: "Verification As A System",
     desc: "Coverage gaps surface before release, so teams respond to risk while there is still time to act.",
-    accent: "text-emerald-600",
-    bg: "bg-emerald-50",
+    gradient: "from-[#CACEFA] to-[#98CDF9]",
+    bg: "from-[#F0EFFE] to-[#E4E8FD]",
   },
 ];
 
 const metrics = [
-  { value: "7", label: "Connected modules" },
-  { value: "100%", label: "Traceability loop" },
-  { value: "< 15m", label: "Idea to actionable plan" },
-  { value: "24/7", label: "Execution intelligence" },
+  { value: "7",    label: "Connected modules",        suffix: "" },
+  { value: "100",  label: "Traceability coverage",    suffix: "%" },
+  { value: "15",   label: "Minutes, idea to plan",    suffix: "m" },
+  { value: "24/7", label: "Execution intelligence",   suffix: "" },
 ];
 
-const stages = [
-  { label: "Capture", color: "#7C3AED" },
-  { label: "Strategy", color: "#2563EB" },
-  { label: "Draft", color: "#D97706" },
-  { label: "Breakdown", color: "#EA580C" },
-  { label: "Build", color: "#059669" },
-  { label: "Verify", color: "#DC2626" },
-  { label: "Insight", color: "#4F46E5" },
+const MODULES = [
+  { label: "Capture",   color: "#7C3AED", dot: "bg-purple-500" },
+  { label: "Strategy",  color: "#3D76F4", dot: "bg-[#3D76F4]" },
+  { label: "Draft",     color: "#D97706", dot: "bg-amber-500" },
+  { label: "Breakdown", color: "#EA580C", dot: "bg-orange-500" },
+  { label: "Build",     color: "#059669", dot: "bg-emerald-500" },
+  { label: "Verify",    color: "#DC2626", dot: "bg-rose-500" },
+  { label: "Insight",   color: "#4F46E5", dot: "bg-indigo-500" },
 ];
 
-const howItWorks = [
-  "AI structures raw input into product-ready context.",
-  "Strategy becomes draft requirements with explicit assumptions.",
-  "Breakdown generates traceable epics and delivery stories.",
-  "Verification closes gaps before release confidence drops.",
+const steps = [
+  { n: "01", title: "Capture",   sub: "AI structures raw input into product-ready context." },
+  { n: "02", title: "Strategy",  sub: "Strategy becomes draft requirements with explicit assumptions." },
+  { n: "03", title: "Breakdown", sub: "Breakdown generates traceable epics and delivery stories." },
+  { n: "04", title: "Verify",    sub: "Verification closes gaps before release confidence drops." },
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   const reduceMotion = useReducedMotion();
 
-  const fadeUp = {
+  const up = (delay = 0) => ({
     initial: { opacity: 0, y: 24 },
     whileInView: { opacity: 1, y: 0 },
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
-    viewport: { once: true, amount: 0.2 },
-  };
+    viewport: { once: true, amount: 0.2 as const },
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const, delay },
+  });
 
   return (
-    <div className="min-h-dvh bg-white text-slate-900 selection:bg-blue-100">
+    <div className="min-h-dvh" style={{ backgroundColor: "#F4F7FE" }}>
 
-      {/* ── Sticky Nav ──────────────────────────────────────────── */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-slate-200/60">
-        <nav
-          className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8"
-          aria-label="Site navigation"
-          data-testid="main-nav"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm" aria-hidden="true">
+      {/* ── Nav ─────────────────────────────────────────────────── */}
+      <header
+        className="sticky top-0 z-50 backdrop-blur-xl"
+        style={{ background: "rgba(255,255,255,0.85)", borderBottom: "1px solid rgba(202,206,250,0.5)" }}
+      >
+        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8" data-testid="main-nav">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center shadow-[0_4px_12px_rgba(61,118,244,0.3)]">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="text-slate-900 font-bold text-base tracking-tight">BuildCopilot</span>
+            <span className="font-bold text-base" style={{ color: "#0F1433" }}>BuildCopilot</span>
           </div>
 
-          <ul className="hidden items-center gap-7 text-sm font-medium text-slate-500 md:flex" role="list">
-            <li><a href="#platform" className="hover:text-slate-900 transition-colors">Platform</a></li>
-            <li><a href="#proof" className="hover:text-slate-900 transition-colors">Outcomes</a></li>
-            <li><a href="#loop" className="hover:text-slate-900 transition-colors">How It Works</a></li>
+          <ul className="hidden items-center gap-7 text-sm font-medium md:flex" style={{ color: "#64748B" }}>
+            <li><a href="#platform" className="hover:text-[#3D76F4] transition-colors">Platform</a></li>
+            <li><a href="#outcomes" className="hover:text-[#3D76F4] transition-colors">Outcomes</a></li>
+            <li><a href="#loop" className="hover:text-[#3D76F4] transition-colors">How It Works</a></li>
           </ul>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Link
               href="/login"
               data-testid="nav-signin-btn"
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300 shadow-sm"
+              className="rounded-xl px-4 py-2 text-sm font-semibold transition-all hover:bg-[#EEF0FD]"
+              style={{ color: "#3D76F4", border: "1px solid rgba(202,206,250,0.6)" }}
             >
               Sign in
             </Link>
@@ -104,227 +102,236 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               type="button"
               onClick={onGetStarted}
               data-testid="nav-start-btn"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-blue-700 shadow-sm active:scale-95"
+              className="btn-primary text-sm"
             >
-              Start now
+              Start now <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-5 pb-0 pt-10 sm:px-8 sm:pt-16 lg:pt-20">
+      <main className="mx-auto max-w-7xl px-5 sm:px-8">
 
         {/* ── Hero ────────────────────────────────────────────────── */}
-        <section
-          id="platform"
-          className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14 pb-20"
-          aria-labelledby="hero-heading"
-        >
-          <motion.div {...fadeUp}>
-            <motion.span
-              className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-mono font-semibold uppercase tracking-[0.16em] text-blue-700"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
+        <section id="platform" className="pt-16 pb-20 lg:pt-24 grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16 items-center">
+          <motion.div {...up(0)}>
+            <span className="pill mb-6 inline-flex">
+              <Sparkles className="h-3.5 w-3.5" />
               Product Delivery Intelligence OS
-            </motion.span>
+            </span>
 
-            <h1
-              id="hero-heading"
-              className="mt-6 text-5xl font-bold leading-[1.08] text-slate-900 tracking-tight sm:text-6xl lg:text-[4.25rem]"
-            >
+            <h1 className="text-5xl font-bold leading-[1.06] tracking-tight sm:text-6xl lg:text-[4.5rem]" style={{ color: "#0F1433" }}>
               Build the product,<br />
-              <span className="text-blue-600">not the coordination</span><br />
+              <span className="gradient-text">not coordination</span><br />
               debt.
             </h1>
 
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-500">
-              BuildCopilot collapses ideation, strategy, requirements, backlog, build, and verification into one command surface so teams ship with continuity.
+            <p className="mt-6 max-w-lg text-lg leading-relaxed" style={{ color: "#64748B" }}>
+              BuildCopilot collapses ideation, strategy, requirements, backlog, build, and verification into one intelligent loop so teams ship with continuity.
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               <motion.button
                 type="button"
                 onClick={onGetStarted}
                 data-testid="hero-launch-btn"
-                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-base font-bold text-white transition-all hover:bg-blue-700 shadow-sm active:scale-95"
-                whileHover={reduceMotion ? undefined : { y: -1 }}
+                className="btn-primary text-base px-7 py-3.5"
+                whileHover={reduceMotion ? undefined : { y: -2 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.98 }}
               >
-                Launch Workspace <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                Launch Workspace <ArrowRight className="h-4.5 w-4.5" />
               </motion.button>
               <motion.a
                 href="#loop"
                 data-testid="hero-seeloop-btn"
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-6 py-3 text-base font-semibold text-slate-700 transition-all hover:bg-slate-50 shadow-sm"
-                whileHover={reduceMotion ? undefined : { y: -1 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                className="btn-secondary text-base px-7 py-3.5"
+                whileHover={reduceMotion ? undefined : { y: -2 }}
               >
-                See the loop <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                See the loop <ChevronRight className="h-4 w-4" />
               </motion.a>
+            </div>
+
+            {/* Trust strip */}
+            <div className="mt-10 flex items-center gap-4 flex-wrap">
+              {["Strategy", "PRD/BRD/FRD", "Backlog", "Delivery Insights"].map((t, i) => (
+                <div key={t} className="flex items-center gap-2 text-sm" style={{ color: "#64748B" }}>
+                  {i > 0 && <span className="w-1 h-1 rounded-full" style={{ backgroundColor: "#CACEFA" }} />}
+                  <span className="font-medium">{t}</span>
+                </div>
+              ))}
             </div>
           </motion.div>
 
           {/* Live Command Surface */}
           <motion.div
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] sm:p-6"
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-            viewport={{ once: true, amount: 0.2 }}
+            {...up(0.12)}
+            className="card-lg p-6"
             data-testid="live-command-surface"
           >
-            <p className="text-xs font-mono font-semibold uppercase tracking-[0.16em] text-slate-400 mb-4">
-              Live Command Surface
-            </p>
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "#CACEFA", fontFamily: "var(--font-mono)" }}>
+                  Live Command Surface
+                </p>
+                <p className="text-sm font-semibold mt-0.5" style={{ color: "#0F1433" }}>7-Module Pipeline</p>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold" style={{ background: "#EEF0FD", color: "#3D76F4", border: "1px solid rgba(202,206,250,0.6)" }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Active
+              </div>
+            </div>
+
             <motion.div
               className="space-y-2"
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.07 } } }}
             >
-              {stages.map((stage) => (
+              {MODULES.map((m, i) => (
                 <motion.div
-                  key={stage.label}
-                  className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5 hover:border-slate-200 hover:bg-white transition-all"
-                  variants={{ hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0 } }}
-                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  key={m.label}
+                  className="flex items-center gap-3 rounded-xl px-4 py-3 transition-all cursor-default"
+                  style={{
+                    background: i === 1 ? "linear-gradient(135deg, #3D76F4, #54AEF5)" : "rgba(244,247,254,0.8)",
+                    border: i === 1 ? "none" : "1px solid rgba(202,206,250,0.35)",
+                  }}
+                  variants={{ hidden: { opacity: 0, x: 10 }, visible: { opacity: 1, x: 0 } }}
+                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={reduceMotion ? undefined : { scale: 1.01 }}
                 >
-                  <span
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: stage.color }}
-                  />
-                  <span className="text-sm font-semibold text-slate-700">{stage.label}</span>
-                  <span className="ml-auto text-[10px] font-mono text-slate-400">module</span>
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${m.dot}`} style={i !== 1 ? { backgroundColor: m.color } : {}} />
+                  <span className="text-sm font-semibold" style={{ color: i === 1 ? "white" : "#0F1433" }}>{m.label}</span>
+                  <span className="ml-auto text-[10px] font-mono" style={{ color: i === 1 ? "rgba(255,255,255,0.7)" : "#CACEFA" }}>
+                    {i === 0 ? "done" : i === 1 ? "active" : "idle"}
+                  </span>
                 </motion.div>
               ))}
             </motion.div>
 
-            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <div className="h-1.5 w-2/5 rounded-full bg-blue-200" />
-                <span className="text-[10px] font-mono text-slate-400">active</span>
+            <div className="mt-5 rounded-xl p-4" style={{ background: "#F4F7FE", border: "1px solid rgba(202,206,250,0.4)" }}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold" style={{ color: "#64748B" }}>Pipeline Progress</span>
+                <span className="text-xs font-bold" style={{ color: "#3D76F4" }}>2/7</span>
               </div>
-              <div className="space-y-1.5">
-                <div className="h-1.5 w-full rounded-full bg-slate-200" />
-                <div className="h-1.5 w-4/5 rounded-full bg-slate-200" />
-                <div className="h-1.5 w-3/5 rounded-full bg-slate-200" />
+              <div className="h-2 rounded-full" style={{ background: "#EEF0FD" }}>
+                <div className="h-2 rounded-full gradient-primary" style={{ width: "29%" }} />
               </div>
             </div>
           </motion.div>
         </section>
 
         {/* ── Metrics ─────────────────────────────────────────────── */}
-        <motion.section
-          id="proof"
-          className="grid gap-px sm:grid-cols-2 lg:grid-cols-4 bg-slate-200 rounded-2xl overflow-hidden border border-slate-200 mb-20"
-          {...fadeUp}
-          data-testid="metrics-section"
-        >
-          {metrics.map((metric) => (
-            <div key={metric.label} className="bg-white px-7 py-8">
-              <p className="text-4xl font-bold text-slate-900 font-mono tracking-tight">{metric.value}</p>
-              <p className="mt-2 text-sm text-slate-500">{metric.label}</p>
-            </div>
-          ))}
+        <motion.section id="outcomes" className="pb-20" {...up(0)} data-testid="metrics-section">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {metrics.map((m, i) => (
+              <motion.div
+                key={m.label}
+                className="card p-6 text-center"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <p className="text-4xl font-bold gradient-text font-mono">{m.value}{m.suffix}</p>
+                <p className="mt-2 text-sm" style={{ color: "#64748B" }}>{m.label}</p>
+              </motion.div>
+            ))}
+          </div>
         </motion.section>
 
         {/* ── Features ────────────────────────────────────────────── */}
         <motion.section
           id="value"
-          className="mb-20"
+          className="pb-20"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          viewport={{ once: true, amount: 0.15 }}
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
         >
           <div className="mb-10 text-center">
-            <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-slate-400 mb-3">Platform</p>
-            <h2 className="text-3xl font-bold text-slate-900 tracking-tight sm:text-4xl">Built for delivery teams that ship.</h2>
+            <span className="pill mb-4 inline-flex">Platform</span>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl" style={{ color: "#0F1433" }}>
+              Built for delivery teams<br className="hidden sm:block" /> that ship.
+            </h2>
           </div>
           <div className="grid gap-5 md:grid-cols-3">
-            {features.map((feature) => (
+            {features.map((f) => (
               <motion.article
-                key={feature.title}
-                className="group rounded-xl border border-slate-200 bg-white p-7 transition-all duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-0.5"
-                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                data-testid={`feature-card-${feature.title.toLowerCase().replace(/\s+/g, '-')}`}
+                key={f.title}
+                className="card p-7 group"
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                data-testid={`feature-card-${f.title.toLowerCase().split(" ")[0]}`}
               >
-                <div className={`mb-5 inline-flex rounded-xl ${feature.bg} p-3 ${feature.accent}`}>
-                  <feature.icon className="h-5 w-5" aria-hidden="true" />
+                <div className={`mb-5 inline-flex rounded-2xl bg-gradient-to-br ${f.bg} p-3.5`}>
+                  <div className={`w-7 h-7 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center shadow-sm`}>
+                    <f.icon className="h-4 w-4 text-white" />
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-sm leading-relaxed text-slate-500">{feature.desc}</p>
+                <h3 className="text-lg font-bold mb-2" style={{ color: "#0F1433" }}>{f.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: "#64748B" }}>{f.desc}</p>
               </motion.article>
             ))}
           </div>
         </motion.section>
 
         {/* ── How It Works ────────────────────────────────────────── */}
-        <motion.section
-          id="loop"
-          className="mb-20 rounded-2xl border border-slate-200 bg-slate-50 p-8 sm:p-10"
-          {...fadeUp}
-          data-testid="how-it-works-section"
-        >
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between mb-8">
-            <div>
-              <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-slate-400 mb-2">How It Works</p>
-              <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight">
-                One flow. Seven modules.<br className="hidden sm:block" /> Full delivery continuity.
-              </h2>
-            </div>
-            <motion.button
-              type="button"
-              onClick={onGetStarted}
-              data-testid="configure-workspace-btn"
-              className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-slate-800 shadow-sm whitespace-nowrap"
-              whileHover={reduceMotion ? undefined : { y: -1 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.98 }}
-            >
-              Configure workspace <ArrowRight className="h-4 w-4" />
-            </motion.button>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {howItWorks.map((line, i) => (
-              <motion.div
-                key={line}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                viewport={{ once: true, amount: 0.3 }}
+        <motion.section id="loop" className="pb-20" {...up(0)} data-testid="how-it-works-section">
+          <div
+            className="rounded-3xl p-8 sm:p-10"
+            style={{ background: "linear-gradient(135deg, #EEF0FD 0%, #DCE8FD 100%)", border: "1px solid rgba(202,206,250,0.5)" }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+              <div>
+                <span className="pill mb-3 inline-flex">How It Works</span>
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl" style={{ color: "#0F1433" }}>
+                  One flow. Seven modules.<br className="hidden sm:block" /> Full delivery continuity.
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={onGetStarted}
+                data-testid="configure-workspace-btn"
+                className="btn-primary whitespace-nowrap"
               >
-                <span className="inline-block w-6 h-6 rounded-md bg-blue-50 text-blue-600 text-[10px] font-mono font-bold flex items-center justify-center mb-3">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <p className="text-sm leading-relaxed text-slate-600">{line}</p>
-              </motion.div>
-            ))}
+                Configure workspace <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {steps.map((s, i) => (
+                <motion.div
+                  key={s.n}
+                  className="card p-6"
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="w-9 h-9 rounded-xl gradient-primary flex items-center justify-center mb-4 shadow-[0_4px_12px_rgba(61,118,244,0.25)]">
+                    <span className="text-xs font-bold text-white font-mono">{s.n}</span>
+                  </div>
+                  <h3 className="text-sm font-bold mb-2" style={{ color: "#0F1433" }}>{s.title}</h3>
+                  <p className="text-xs leading-relaxed" style={{ color: "#64748B" }}>{s.sub}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </motion.section>
       </main>
 
-      {/* ── CTA Banner ──────────────────────────────────────────── */}
-      <motion.section
-        className="bg-blue-600"
-        {...fadeUp}
-        data-testid="cta-banner"
-      >
-        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16">
-          <div className="flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
+      {/* ── CTA ─────────────────────────────────────────────────── */}
+      <motion.section className="gradient-hero" {...up(0)} data-testid="cta-banner">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-7">
             <div>
-              <p className="text-xs font-mono font-semibold uppercase tracking-[0.2em] text-blue-200 mb-2">
+              <span className="pill mb-4 inline-flex" style={{ background: "rgba(255,255,255,0.15)", color: "white", borderColor: "rgba(255,255,255,0.3)" }}>
                 Ready To Execute
-              </p>
+              </span>
               <h2 className="text-2xl font-bold text-white sm:text-3xl tracking-tight">
                 Design once. Deliver continuously.
               </h2>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-blue-100 sm:text-base">
+              <p className="mt-2 max-w-lg text-sm leading-relaxed sm:text-base" style={{ color: "rgba(255,255,255,0.8)" }}>
                 Start with one idea and leave with strategy, requirements, backlog and verification signals aligned for shipping.
               </p>
             </div>
@@ -332,7 +339,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               type="button"
               onClick={onGetStarted}
               data-testid="cta-start-onboarding-btn"
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-bold text-blue-600 transition-all hover:bg-blue-50 shadow-sm whitespace-nowrap"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold whitespace-nowrap transition-all hover:bg-[#EEF0FD] shadow-lg"
+              style={{ color: "#3D76F4" }}
               whileHover={reduceMotion ? undefined : { y: -2 }}
               whileTap={reduceMotion ? undefined : { scale: 0.98 }}
             >
@@ -343,17 +351,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </motion.section>
 
       {/* ── Footer ──────────────────────────────────────────────── */}
-      <footer className="border-t border-slate-200 bg-white">
+      <footer style={{ background: "#F4F7FE", borderTop: "1px solid rgba(202,206,250,0.5)" }}>
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center" aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <div className="w-7 h-7 rounded-lg gradient-primary flex items-center justify-center">
+              <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="text-sm font-bold text-slate-800">BuildCopilot</span>
+            <span className="text-sm font-bold" style={{ color: "#0F1433" }}>BuildCopilot</span>
           </div>
-          <p className="text-sm text-slate-400">From idea capture to delivery insight, with traceability at every step.</p>
+          <p className="text-sm" style={{ color: "#94A3B8" }}>
+            From idea capture to delivery insight, with traceability at every step.
+          </p>
         </div>
       </footer>
     </div>
