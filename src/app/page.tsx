@@ -46,8 +46,8 @@ export default function Home() {
 
   if (appState === "loading") {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <div className="w-5 h-5 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-5 h-5 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
       </div>
     );
   }

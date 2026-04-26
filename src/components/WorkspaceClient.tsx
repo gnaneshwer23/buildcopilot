@@ -33,15 +33,15 @@ interface WorkspaceClientProps {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const MODULES: Array<{
-  id: ModuleId; label: string; icon: React.ElementType; accent: string;
+  id: ModuleId; label: string; icon: React.ElementType; accent: string; color: string;
 }> = [
-  { id: "capture",   label: "Capture",   icon: Lightbulb,   accent: "from-purple-500 to-fuchsia-500" },
-  { id: "strategy",  label: "Strategy",  icon: Target,      accent: "from-blue-500 to-cyan-500" },
-  { id: "draft",     label: "Draft",     icon: FileText,    accent: "from-yellow-500 to-orange-500" },
-  { id: "breakdown", label: "Breakdown", icon: GitBranch,   accent: "from-orange-500 to-red-500" },
-  { id: "build",     label: "Build",     icon: Code2,       accent: "from-emerald-500 to-teal-500" },
-  { id: "verify",    label: "Verify",    icon: ShieldCheck, accent: "from-rose-500 to-red-500" },
-  { id: "insight",   label: "Insight",   icon: BarChart3,   accent: "from-indigo-500 to-blue-500" },
+  { id: "capture",   label: "Capture",   icon: Lightbulb,   accent: "bg-purple-50 text-purple-600",  color: "#7C3AED" },
+  { id: "strategy",  label: "Strategy",  icon: Target,      accent: "bg-blue-50 text-blue-600",      color: "#2563EB" },
+  { id: "draft",     label: "Draft",     icon: FileText,    accent: "bg-amber-50 text-amber-600",    color: "#D97706" },
+  { id: "breakdown", label: "Breakdown", icon: GitBranch,   accent: "bg-orange-50 text-orange-600",  color: "#EA580C" },
+  { id: "build",     label: "Build",     icon: Code2,       accent: "bg-emerald-50 text-emerald-600",color: "#059669" },
+  { id: "verify",    label: "Verify",    icon: ShieldCheck, accent: "bg-rose-50 text-rose-600",      color: "#DC2626" },
+  { id: "insight",   label: "Insight",   icon: BarChart3,   accent: "bg-indigo-50 text-indigo-600",  color: "#4F46E5" },
 ];
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
@@ -52,18 +52,13 @@ function cn(...cls: (string | false | null | undefined)[]) {
 
 // ─── Shared UI ────────────────────────────────────────────────────────────────
 
-function Card({ children, className, accent }: { children: React.ReactNode; className?: string; accent?: string }) {
+function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={cn(
-      "group relative overflow-hidden rounded-3xl border border-white/10 bg-[#121821]/60 p-6 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:border-white/20 hover:shadow-blue-500/10",
+      "rounded-xl border border-slate-200 bg-white shadow-sm",
       className
     )}>
-      {accent && (
-        <div className={cn("absolute -right-10 -top-10 h-32 w-32 blur-3xl opacity-20 transition-opacity group-hover:opacity-30", accent)} />
-      )}
-      <div className="relative z-10">
-        {children}
-      </div>
+      {children}
     </div>
   );
 }
@@ -78,7 +73,8 @@ function RunAIButton({
       type="button"
       onClick={onClick}
       disabled={loading || disabled}
-      className="flex items-center gap-2 rounded-xl bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 hover:bg-blue-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      data-testid="run-ai-btn"
+      className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
     >
       {loading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Sparkles className="h-4 w-4" aria-hidden="true" />}
       {loading ? "Generating…" : label}
@@ -92,14 +88,14 @@ function ModuleHeader({
   title: string; subtitle: string; icon: React.ElementType; action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-7 flex items-center justify-between">
+    <div className="mb-6 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
-          <Icon className="h-5 w-5 text-blue-300" aria-hidden="true" />
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+          <Icon className="h-5 w-5 text-blue-600" aria-hidden="true" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">{title}</h1>
-          <p className="mt-0.5 text-sm text-slate-400">{subtitle}</p>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">{title}</h1>
+          <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>
         </div>
       </div>
       {action}
@@ -113,12 +109,12 @@ function EmptyState({
   icon: React.ElementType; title: string; body: string; action?: React.ReactNode;
 }) {
   return (
-    <Card className="flex flex-col items-center justify-center gap-5 py-20 text-center">
-      <div className="rounded-2xl bg-blue-500/10 p-5 text-blue-300">
+    <Card className="flex flex-col items-center justify-center gap-5 py-20 text-center p-6">
+      <div className="rounded-2xl bg-blue-50 p-5 text-blue-600">
         <Icon className="h-8 w-8" aria-hidden="true" />
       </div>
       <div>
-        <h2 className="text-lg font-semibold text-white">{title}</h2>
+        <h2 className="text-lg font-bold text-slate-900">{title}</h2>
         <p className="mt-2 text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">{body}</p>
       </div>
       {action}
@@ -128,18 +124,24 @@ function EmptyState({
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
-    Done:        "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-    "In Progress":"bg-blue-500/15 text-blue-300 border-blue-500/30",
-    "To Do":     "bg-slate-500/15 text-slate-300 border-slate-500/30",
-    Validated:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-    Partial:     "bg-yellow-500/15 text-yellow-300 border-yellow-500/30",
-    Gap:         "bg-red-500/15 text-red-300 border-red-500/30",
-    complete:    "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-    partial:     "bg-yellow-500/15 text-yellow-300 border-yellow-500/30",
-    missing:     "bg-red-500/15 text-red-300 border-red-500/30",
+    Done:         "bg-emerald-50 text-emerald-700 border-emerald-200",
+    "In Progress":"bg-blue-50 text-blue-700 border-blue-200",
+    "To Do":      "bg-slate-100 text-slate-600 border-slate-200",
+    Validated:    "bg-emerald-50 text-emerald-700 border-emerald-200",
+    Partial:      "bg-amber-50 text-amber-700 border-amber-200",
+    Gap:          "bg-red-50 text-red-700 border-red-200",
+    complete:     "bg-emerald-50 text-emerald-700 border-emerald-200",
+    partial:      "bg-amber-50 text-amber-700 border-amber-200",
+    missing:      "bg-red-50 text-red-700 border-red-200",
+    High:         "bg-red-50 text-red-700 border-red-200",
+    Medium:       "bg-amber-50 text-amber-700 border-amber-200",
+    Low:          "bg-slate-50 text-slate-600 border-slate-200",
+    Must:         "bg-blue-50 text-blue-700 border-blue-200",
+    Should:       "bg-indigo-50 text-indigo-700 border-indigo-200",
+    Could:        "bg-slate-50 text-slate-600 border-slate-200",
   };
   return (
-    <span className={cn("rounded-full border px-2.5 py-1 text-xs font-medium capitalize", map[status] ?? map["To Do"])}>
+    <span className={cn("rounded-md border px-2 py-0.5 text-xs font-semibold capitalize", map[status] ?? map["To Do"])}>
       {status}
     </span>
   );
@@ -186,8 +188,8 @@ function CaptureScreen({
       />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-        <Card className="xl:col-span-2">
-          <label htmlFor="capture-idea" className="text-xs font-bold uppercase tracking-widest text-slate-500">
+        <Card className="xl:col-span-2 p-5">
+          <label htmlFor="capture-idea" className="text-xs font-mono font-semibold uppercase tracking-[0.18em] text-slate-400">
             Write your idea
           </label>
           <textarea
@@ -195,13 +197,14 @@ function CaptureScreen({
             value={rawIdea}
             onChange={(e) => setRawIdea(e.target.value)}
             placeholder="Describe your project, the problem it solves, and who it's for…"
-            className="mt-4 h-44 w-full resize-none rounded-2xl border border-white/10 bg-[#0B0F14] p-4 text-sm text-slate-200 outline-none placeholder:text-slate-600 focus:ring-2 focus:ring-blue-500/40 transition-all leading-relaxed"
+            data-testid="capture-idea-textarea"
+            className="mt-3 h-44 w-full resize-none rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-blue-100 focus:border-blue-600 transition-all leading-relaxed"
           />
-          <p className="mt-2 text-xs text-slate-600">Be specific about the problem, target users, and value you want to deliver.</p>
+          <p className="mt-2 text-xs text-slate-400">Be specific about the problem, target users, and value you want to deliver.</p>
         </Card>
 
-        <Card className="flex flex-col justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-white">AI Clarity Score</h2>
+        <Card className="flex flex-col justify-between p-5">
+          <h2 className="text-xs font-mono font-semibold uppercase tracking-[0.18em] text-slate-400">AI Clarity Score</h2>
           <div className="flex items-center gap-5 my-4">
             <div
               className="relative w-24 h-24 shrink-0 flex items-center justify-center"
@@ -209,33 +212,33 @@ function CaptureScreen({
               aria-label={`Clarity score ${clarityScore}%`}
             >
               <svg className="w-full h-full -rotate-90" aria-hidden="true">
-                <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
+                <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
                 <circle
                   cx="48" cy="48" r="40"
                   stroke="currentColor" strokeWidth="8" fill="transparent"
-                  className="text-blue-500"
+                  className="text-blue-600"
                   strokeDasharray={circumference}
                   strokeDashoffset={circumference * (1 - clarityScore / 100)}
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="absolute text-xl font-bold text-white" aria-hidden="true">{clarityScore}%</span>
+              <span className="absolute text-xl font-bold text-slate-900 font-mono" aria-hidden="true">{clarityScore}%</span>
             </div>
-            <ul className="space-y-2 text-xs text-slate-400">
+            <ul className="space-y-2 text-xs text-slate-500">
               <li className="flex items-center gap-2">
-                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.problemStatement ? "bg-green-500" : "bg-slate-600")} />
+                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.problemStatement ? "bg-emerald-500" : "bg-slate-300")} />
                 Problem statement
               </li>
               <li className="flex items-center gap-2">
-                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.targetUsers?.length ? "bg-green-500" : "bg-slate-600")} />
+                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.targetUsers?.length ? "bg-emerald-500" : "bg-slate-300")} />
                 Target users
               </li>
               <li className="flex items-center gap-2">
-                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.usp ? "bg-green-500" : "bg-slate-600")} />
+                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.usp ? "bg-emerald-500" : "bg-slate-300")} />
                 Unique value
               </li>
               <li className="flex items-center gap-2">
-                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.goals?.length ? "bg-green-500" : "bg-slate-600")} />
+                <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", analysis?.goals?.length ? "bg-emerald-500" : "bg-slate-300")} />
                 Goals defined
               </li>
             </ul>
@@ -246,14 +249,14 @@ function CaptureScreen({
       {analysis && (
         <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 animate-fade-in" aria-live="polite">
           {([
-            ["Problem",     analysis.problemStatement],
-            ["Target Users",analysis.targetUsers.join(", ")],
-            ["Goals",       analysis.goals[0] ?? "—"],
-            ["USP",         analysis.usp],
+            ["Problem",      analysis.problemStatement],
+            ["Target Users", analysis.targetUsers.join(", ")],
+            ["Goals",        analysis.goals[0] ?? "—"],
+            ["USP",          analysis.usp],
           ] as [string, string][]).map(([title, text]) => (
-            <Card key={title} className="hover:border-white/20 transition-all">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-white mb-3">{title}</h3>
-              <p className="text-sm leading-relaxed text-slate-400">{text}</p>
+            <Card key={title} className="p-4 hover:shadow-md transition-shadow">
+              <h3 className="text-xs font-mono font-semibold uppercase tracking-[0.18em] text-slate-400 mb-2">{title}</h3>
+              <p className="text-sm leading-relaxed text-slate-700">{text}</p>
             </Card>
           ))}
         </div>
@@ -301,27 +304,27 @@ function StrategyScreen({
       ) : (
         <div className="space-y-5">
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-            <Card className="xl:col-span-2">
-              <h2 className="text-sm font-semibold text-white mb-3">Product Vision</h2>
-              <p className="text-sm leading-relaxed text-slate-300 rounded-2xl border border-white/10 bg-[#0B0F14] p-4">{strategy.vision}</p>
+            <Card className="xl:col-span-2 p-5">
+              <h2 className="text-sm font-bold text-slate-800 mb-3">Product Vision</h2>
+              <p className="text-sm leading-relaxed text-slate-600 rounded-lg border border-slate-100 bg-slate-50 p-4">{strategy.vision}</p>
               <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Market Position</h3>
-                  <p className="text-sm text-slate-300">{strategy.marketPosition}</p>
+                  <h3 className="text-xs font-mono font-semibold uppercase tracking-[0.16em] text-slate-400 mb-2">Market Position</h3>
+                  <p className="text-sm text-slate-600">{strategy.marketPosition}</p>
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Business Model</h3>
-                  <p className="text-sm text-slate-300">{strategy.businessModel}</p>
+                  <h3 className="text-xs font-mono font-semibold uppercase tracking-[0.16em] text-slate-400 mb-2">Business Model</h3>
+                  <p className="text-sm text-slate-600">{strategy.businessModel}</p>
                 </div>
               </div>
             </Card>
 
-            <Card>
-              <h2 className="text-sm font-semibold text-white mb-4">Success Metrics</h2>
+            <Card className="p-5">
+              <h2 className="text-sm font-bold text-slate-800 mb-4">Success Metrics</h2>
               <ul className="space-y-2">
                 {strategy.successMetrics.map((m, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-slate-400">
-                    <TrendingUp className="h-4 w-4 shrink-0 mt-0.5 text-blue-400" aria-hidden="true" />
+                  <li key={i} className="flex items-start gap-2.5 text-sm text-slate-600">
+                    <TrendingUp className="h-4 w-4 shrink-0 mt-0.5 text-blue-500" aria-hidden="true" />
                     {m}
                   </li>
                 ))}
@@ -331,17 +334,19 @@ function StrategyScreen({
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {(["now", "next", "later"] as const).map((phase) => {
-              const colours: Record<string, string> = { now: "bg-emerald-500", next: "bg-blue-500", later: "bg-purple-500" };
+              const colours: Record<string, string> = { now: "bg-emerald-500", next: "bg-blue-500", later: "bg-violet-500" };
+              const textColours: Record<string, string> = { now: "text-emerald-700", next: "text-blue-700", later: "text-violet-700" };
+              const bgColours: Record<string, string> = { now: "bg-emerald-50 border-emerald-200", next: "bg-blue-50 border-blue-200", later: "bg-violet-50 border-violet-200" };
               const labels: Record<string, string> = { now: "Now (MVP)", next: "Next (Scale)", later: "Later (Vision)" };
               return (
-                <Card key={phase}>
+                <Card key={phase} className="p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <span className={cn("w-2 h-2 rounded-full", colours[phase])} />
-                    <h3 className="text-sm font-semibold text-white">{labels[phase]}</h3>
+                    <h3 className="text-sm font-bold text-slate-900">{labels[phase]}</h3>
                   </div>
                   <div className="space-y-2">
                     {strategy.roadmapNowNextLater[phase].map((item, i) => (
-                      <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-sm text-slate-300">{item}</div>
+                      <div key={i} className={cn("rounded-lg border px-3 py-2 text-sm", textColours[phase], bgColours[phase])}>{item}</div>
                     ))}
                   </div>
                 </Card>
@@ -350,21 +355,27 @@ function StrategyScreen({
           </div>
 
           {strategy.prioritization.length > 0 && (
-            <Card>
-              <h2 className="text-sm font-semibold text-white mb-4">Feature Prioritization</h2>
-              <div className="overflow-hidden rounded-2xl border border-white/10">
+            <Card className="overflow-hidden p-0">
+              <div className="p-5 border-b border-slate-100">
+                <h2 className="text-sm font-bold text-slate-800">Feature Prioritization</h2>
+              </div>
+              <div className="overflow-hidden">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-slate-500">
-                    <tr><th className="p-3">Feature</th><th className="p-3">Method</th><th className="p-3">Rationale</th></tr>
+                  <thead className="bg-slate-50 text-xs font-mono uppercase tracking-wide text-slate-500">
+                    <tr>
+                      <th className="px-5 py-3">Feature</th>
+                      <th className="px-5 py-3">Method</th>
+                      <th className="px-5 py-3">Rationale</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {strategy.prioritization.map((p, i) => (
-                      <tr key={i} className="border-t border-white/10 text-slate-300">
-                        <td className="p-3 font-medium">{p.item}</td>
-                        <td className="p-3">
-                          <span className="rounded-full border border-indigo-500/30 bg-indigo-500/15 px-2.5 py-1 text-xs font-medium text-indigo-300">{p.method}</span>
+                      <tr key={i} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                        <td className="px-5 py-3 font-medium text-slate-800">{p.item}</td>
+                        <td className="px-5 py-3">
+                          <span className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">{p.method}</span>
                         </td>
-                        <td className="p-3 text-slate-400">{p.rationale}</td>
+                        <td className="px-5 py-3 text-slate-500">{p.rationale}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -401,12 +412,8 @@ function buildReqMarkdown(tab: "prd" | "brd" | "frd", req: RequirementsPack): st
       `\n## Benefits\n${req.brd.benefits.map((b) => `- ${b}`).join("\n")}`,
     ].join("\n");
   }
-  const frRows = req.frd.functionalRequirements
-    .map((r) => `| ${r.id} | ${r.text} | ${r.priority} |`)
-    .join("\n");
-  const nfrRows = req.frd.nonFunctionalRequirements
-    .map((r) => `| ${r.id} | ${r.category} | ${r.text} |`)
-    .join("\n");
+  const frRows = req.frd.functionalRequirements.map((r) => `| ${r.id} | ${r.text} | ${r.priority} |`).join("\n");
+  const nfrRows = req.frd.nonFunctionalRequirements.map((r) => `| ${r.id} | ${r.category} | ${r.text} |`).join("\n");
   return [
     `# Functional Requirements Document`,
     `\n## Functional Requirements\n| ID | Requirement | Priority |\n|---|---|---|\n${frRows}`,
@@ -460,30 +467,32 @@ function DraftScreen({
           action={<RunAIButton onClick={onRun} loading={generating} label="Generate PRD, BRD & FRD" />}
         />
       ) : (
-        <Card>
-          <div className="mb-5 flex items-center justify-between gap-4 flex-wrap">
+        <Card className="overflow-hidden p-0">
+          <div className="border-b border-slate-100 bg-slate-50 px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <h2 className="text-lg font-semibold text-white">{req.prd.title}</h2>
-              <p className="mt-1 text-sm text-slate-500">Generated · {new Date(req.generatedAt).toLocaleDateString()}</p>
+              <h2 className="text-base font-bold text-slate-900">{req.prd.title}</h2>
+              <p className="mt-0.5 text-xs text-slate-400">Generated · {new Date(req.generatedAt).toLocaleDateString()}</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => handleCopy(req)}
-                className="flex items-center gap-1.5 rounded-xl border border-white/10 px-3 py-1.5 text-xs font-medium text-slate-400 hover:border-violet-500/40 hover:text-violet-300 transition-colors"
+                data-testid="copy-md-btn"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 hover:border-slate-300 hover:text-slate-800 transition-colors shadow-sm"
               >
-                {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
                 {copied ? "Copied!" : "Copy MD"}
               </button>
-              <div className="flex gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-1">
+              <div className="flex gap-1 rounded-lg border border-slate-200 bg-white p-1 shadow-sm" data-testid="draft-tabs">
                 {(["prd", "brd", "frd"] as const).map((t) => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => setTab(t)}
+                    data-testid={`tab-${t}`}
                     className={cn(
-                      "rounded-xl px-4 py-1.5 text-xs font-bold uppercase tracking-widest transition-all",
-                      tab === t ? "bg-blue-500 text-white shadow-md" : "text-slate-400 hover:text-white"
+                      "rounded-md px-4 py-1.5 text-xs font-bold uppercase tracking-[0.1em] transition-all",
+                      tab === t ? "bg-blue-600 text-white shadow-sm" : "text-slate-500 hover:text-slate-800"
                     )}
                   >
                     {t}
@@ -493,85 +502,95 @@ function DraftScreen({
             </div>
           </div>
 
-          {tab === "prd" && (
-            <div className="space-y-3">
-              {[
-                ["Objectives", req.prd.objectives.join(" • ")],
-                ["Personas",   req.prd.personas.join(", ")],
-                ["Features",   req.prd.features.join(" • ")],
-                ["Dependencies", req.prd.dependencies.join(", ")],
-                ["Release Plan", req.prd.releasePlan.join(" → ")],
-              ].map(([title, text]) => (
-                <div key={title} className="rounded-2xl border border-white/10 bg-[#0B0F14] p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400">{title}</h3>
-                    <button type="button" className="text-xs text-blue-400 hover:text-blue-300 transition-colors">Improve with AI</button>
+          <div className="p-5">
+            {tab === "prd" && (
+              <div className="space-y-3">
+                {[
+                  ["Objectives", req.prd.objectives.join(" • ")],
+                  ["Personas",   req.prd.personas.join(", ")],
+                  ["Features",   req.prd.features.join(" • ")],
+                  ["Dependencies", req.prd.dependencies.join(", ")],
+                  ["Release Plan", req.prd.releasePlan.join(" → ")],
+                ].map(([title, text]) => (
+                  <div key={title} className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xs font-mono font-semibold uppercase tracking-[0.16em] text-slate-400">{title}</h3>
+                      <button type="button" className="text-xs text-blue-600 hover:text-blue-700 transition-colors font-medium">Improve with AI</button>
+                    </div>
+                    <p className="text-sm leading-relaxed text-slate-700">{text}</p>
                   </div>
-                  <p className="text-sm leading-relaxed text-slate-300">{text}</p>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
 
-          {tab === "brd" && (
-            <div className="space-y-3">
-              {[
-                ["Business Case",  req.brd.businessCase],
-                ["Stakeholders",   req.brd.stakeholders.join(", ")],
-                ["Assumptions",    req.brd.assumptions.join(" • ")],
-                ["Constraints",    req.brd.constraints.join(" • ")],
-                ["Benefits",       req.brd.benefits.join(" • ")],
-              ].map(([title, text]) => (
-                <div key={title} className="rounded-2xl border border-white/10 bg-[#0B0F14] p-4">
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">{title}</h3>
-                  <p className="text-sm leading-relaxed text-slate-300">{text}</p>
-                </div>
-              ))}
-            </div>
-          )}
+            {tab === "brd" && (
+              <div className="space-y-3">
+                {[
+                  ["Business Case",  req.brd.businessCase],
+                  ["Stakeholders",   req.brd.stakeholders.join(", ")],
+                  ["Assumptions",    req.brd.assumptions.join(" • ")],
+                  ["Constraints",    req.brd.constraints.join(" • ")],
+                  ["Benefits",       req.brd.benefits.join(" • ")],
+                ].map(([title, text]) => (
+                  <div key={title} className="rounded-lg border border-slate-100 bg-slate-50 p-4">
+                    <h3 className="text-xs font-mono font-semibold uppercase tracking-[0.16em] text-slate-400 mb-2">{title}</h3>
+                    <p className="text-sm leading-relaxed text-slate-700">{text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
 
-          {tab === "frd" && (
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Functional Requirements</h3>
-                <div className="overflow-hidden rounded-2xl border border-white/10">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-slate-500">
-                      <tr><th className="p-3">ID</th><th className="p-3">Requirement</th><th className="p-3">Priority</th></tr>
-                    </thead>
-                    <tbody>
-                      {req.frd.functionalRequirements.map((fr) => (
-                        <tr key={fr.id} className="border-t border-white/10 text-slate-300">
-                          <td className="p-3 font-mono text-xs text-blue-400">{fr.id}</td>
-                          <td className="p-3">{fr.text}</td>
-                          <td className="p-3"><StatusPill status={fr.priority} /></td>
+            {tab === "frd" && (
+              <div className="space-y-5">
+                <div>
+                  <h3 className="text-xs font-mono font-semibold uppercase tracking-[0.16em] text-slate-400 mb-3">Functional Requirements</h3>
+                  <div className="overflow-hidden rounded-xl border border-slate-200">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-slate-50 text-xs font-mono uppercase tracking-wide text-slate-500">
+                        <tr>
+                          <th className="px-4 py-3">ID</th>
+                          <th className="px-4 py-3">Requirement</th>
+                          <th className="px-4 py-3">Priority</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {req.frd.functionalRequirements.map((fr) => (
+                          <tr key={fr.id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                            <td className="px-4 py-3 font-mono text-xs text-blue-600 font-semibold">{fr.id}</td>
+                            <td className="px-4 py-3 text-slate-700">{fr.text}</td>
+                            <td className="px-4 py-3"><StatusPill status={fr.priority} /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xs font-mono font-semibold uppercase tracking-[0.16em] text-slate-400 mb-3">Non-Functional Requirements</h3>
+                  <div className="overflow-hidden rounded-xl border border-slate-200">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-slate-50 text-xs font-mono uppercase tracking-wide text-slate-500">
+                        <tr>
+                          <th className="px-4 py-3">ID</th>
+                          <th className="px-4 py-3">Category</th>
+                          <th className="px-4 py-3">Requirement</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {req.frd.nonFunctionalRequirements.map((nfr) => (
+                          <tr key={nfr.id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                            <td className="px-4 py-3 font-mono text-xs text-violet-600 font-semibold">{nfr.id}</td>
+                            <td className="px-4 py-3 text-slate-500 text-xs">{nfr.category}</td>
+                            <td className="px-4 py-3 text-slate-700">{nfr.text}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Non-Functional Requirements</h3>
-                <div className="overflow-hidden rounded-2xl border border-white/10">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-slate-500">
-                      <tr><th className="p-3">ID</th><th className="p-3">Category</th><th className="p-3">Requirement</th></tr>
-                    </thead>
-                    <tbody>
-                      {req.frd.nonFunctionalRequirements.map((nfr) => (
-                        <tr key={nfr.id} className="border-t border-white/10 text-slate-300">
-                          <td className="p-3 font-mono text-xs text-purple-400">{nfr.id}</td>
-                          <td className="p-3 text-slate-400">{nfr.category}</td>
-                          <td className="p-3">{nfr.text}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </Card>
       )}
     </div>
@@ -607,7 +626,7 @@ function BreakdownScreen({
     return (
       <div>
         <ModuleHeader title="BuildCopilot Breakdown" subtitle="Convert PRD into epics and user stories." icon={GitBranch} />
-        <EmptyState icon={FileText} title="Requirements needed" body="Generate PRD, BRD & FRD in the Draft module first — the backlog is derived from your functional requirements." />
+        <EmptyState icon={FileText} title="Requirements needed" body="Generate PRD, BRD & FRD in the Draft module first." />
       </div>
     );
   }
@@ -631,8 +650,8 @@ function BreakdownScreen({
       ) : (
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-4">
           {/* Epic Tree */}
-          <Card>
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-white">Epic Tree ({backlog.epics.length})</h2>
+          <Card className="p-4">
+            <h2 className="mb-4 text-xs font-mono font-semibold uppercase tracking-[0.18em] text-slate-400">Epic Tree ({backlog.epics.length})</h2>
             <div className="space-y-2">
               {backlog.epics.map((epic) => (
                 <button
@@ -640,24 +659,24 @@ function BreakdownScreen({
                   type="button"
                   onClick={() => setSelectedEpicId(epic.id)}
                   className={cn(
-                    "w-full rounded-xl border p-3 text-left transition-all",
+                    "w-full rounded-lg border p-3 text-left transition-all",
                     selectedEpic?.id === epic.id
-                      ? "border-blue-500/50 bg-blue-500/10"
-                      : "border-white/10 bg-white/[0.02] hover:border-white/20"
+                      ? "border-blue-200 bg-blue-50"
+                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
                   )}
                 >
-                  <GitBranch className="mb-2 h-4 w-4 text-blue-300" aria-hidden="true" />
-                  <p className="text-xs font-semibold text-slate-300">{epic.title}</p>
-                  <p className="mt-1 text-[10px] text-slate-600">{epic.stories.length} stories</p>
+                  <GitBranch className={cn("mb-2 h-4 w-4", selectedEpic?.id === epic.id ? "text-blue-600" : "text-slate-400")} aria-hidden="true" />
+                  <p className={cn("text-xs font-semibold", selectedEpic?.id === epic.id ? "text-blue-900" : "text-slate-700")}>{epic.title}</p>
+                  <p className="mt-1 text-[10px] text-slate-400">{epic.stories.length} stories</p>
                 </button>
               ))}
             </div>
-            <div className="mt-5 pt-4 border-t border-white/10">
-              <p className="text-xs text-slate-500">{allStories.length} total stories</p>
+            <div className="mt-4 pt-3 border-t border-slate-100">
+              <p className="text-xs text-slate-400">{allStories.length} total stories</p>
             </div>
           </Card>
 
-          {/* Kanban — stories by real status */}
+          {/* Kanban */}
           <div className="xl:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
             {(["todo", "in_progress", "done"] as const).map((colStatus) => {
               const colLabel = colStatus === "todo" ? "To Do" : colStatus === "in_progress" ? "In Progress" : "Done";
@@ -665,31 +684,35 @@ function BreakdownScreen({
               const colStories = (selectedEpic?.stories ?? allStories).filter(
                 (s) => (s.status ?? "todo") === colStatus,
               );
+              const colHeader = {
+                todo: "text-slate-600 bg-slate-100",
+                in_progress: "text-blue-700 bg-blue-50",
+                done: "text-emerald-700 bg-emerald-50",
+              }[colStatus];
               return (
                 <div key={colStatus}>
-                  <div className="mb-3 flex items-center justify-between px-1">
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-white">{colLabel}</h3>
-                    <span className="text-xs font-bold text-slate-600">{colStories.length}</span>
+                  <div className={cn("mb-3 flex items-center justify-between rounded-lg px-3 py-2", colHeader)}>
+                    <h3 className="text-xs font-bold uppercase tracking-[0.16em]">{colLabel}</h3>
+                    <span className="text-xs font-bold">{colStories.length}</span>
                   </div>
-                  <div className="space-y-3 rounded-2xl border border-white/[0.05] bg-black/20 p-3 min-h-48">
+                  <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-3 min-h-48">
                     {colStories.map((story) => (
-                      <div key={story.id} className="rounded-2xl border border-white/10 bg-[#0B0F14] p-4 hover:border-blue-500/30 transition-all">
+                      <div key={story.id} className="rounded-lg border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-sm transition-all">
                         <div className="mb-3 flex items-center justify-between">
-                          <span className="text-[10px] font-mono text-slate-500">{story.id}</span>
+                          <span className="text-[10px] font-mono text-slate-400">{story.id}</span>
                           <button
                             type="button"
                             onClick={() => onStoryStatusChange(story.id, nextStatus)}
-                            title={`Move to ${nextStatus === "in_progress" ? "In Progress" : nextStatus === "done" ? "Done" : "To Do"}`}
-                            className="rounded-lg border border-white/10 px-2 py-0.5 text-[10px] text-slate-400 hover:border-violet-500/50 hover:text-violet-300 transition-colors"
+                            className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500 hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                           >
                             → {nextStatus === "in_progress" ? "In Progress" : nextStatus === "done" ? "Done" : "To Do"}
                           </button>
                         </div>
-                        <h4 className="text-sm font-medium leading-snug text-white">{story.title}</h4>
-                        <p className="mt-2 text-[10px] text-slate-600">As a <span className="text-slate-500">{story.asA}</span></p>
-                        <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
+                        <h4 className="text-sm font-semibold text-slate-800 leading-snug">{story.title}</h4>
+                        <p className="mt-2 text-[10px] text-slate-400">As a <span className="text-slate-600">{story.asA}</span></p>
+                        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
                           <StatusPill status={colLabel} />
-                          <span className="text-[10px] text-slate-600">{story.acceptanceCriteria.length} AC</span>
+                          <span className="text-[10px] text-slate-400">{story.acceptanceCriteria.length} AC</span>
                         </div>
                       </div>
                     ))}
@@ -725,16 +748,16 @@ function BuildScreen({
         <EmptyState icon={Code2} title="Generate backlog first" body="The Build module derives sprint tasks from your backlog. Generate stories in Breakdown to continue." />
       ) : (
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
-          <Card className="xl:col-span-2">
+          <Card className="xl:col-span-2 p-5">
             <div className="mb-5 flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-semibold text-white">Sprint 1 — Core Pipeline</h2>
-                <p className="mt-1 text-sm text-slate-400">Goal: idea-to-PRD workflow</p>
+                <h2 className="text-sm font-bold text-slate-900">Sprint 1 — Core Pipeline</h2>
+                <p className="mt-1 text-xs text-slate-400">Goal: idea-to-PRD workflow</p>
               </div>
               <StatusPill status="In Progress" />
             </div>
             <div
-              className="h-2 rounded-full bg-white/10"
+              className="h-2 rounded-full bg-slate-100"
               role="progressbar"
               aria-valuenow={pct}
               aria-valuemin={0}
@@ -743,38 +766,38 @@ function BuildScreen({
             >
               <div className="h-2 rounded-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
             </div>
-            <p className="mt-2 text-xs text-slate-500">{pct}% complete · {doneCount} done · {inProgCount} in progress</p>
+            <p className="mt-2 text-xs text-slate-400 font-mono">{pct}% complete · {doneCount} done · {inProgCount} in progress</p>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-6 space-y-2.5">
               {stories.slice(0, 6).map((story, i) => {
                 const s = story.status ?? "todo";
                 const storyLabel = s === "done" ? "Done" : s === "in_progress" ? "In Progress" : "To Do";
                 const nextS: StoryStatus = s === "todo" ? "in_progress" : s === "in_progress" ? "done" : "todo";
                 return (
-                  <div key={story.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0B0F14] p-4">
+                  <div key={story.id} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-4 hover:border-slate-300 transition-all">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-mono text-slate-500 shrink-0">{story.id}</span>
+                        <span className="text-[10px] font-mono text-slate-400 shrink-0">{story.id}</span>
                         <StatusPill status={storyLabel} />
                       </div>
-                      <h3 className="text-sm font-medium text-white truncate">{story.title}</h3>
-                      <p className="mt-0.5 text-[10px] text-slate-600">As a {story.asA}</p>
+                      <h3 className="text-sm font-semibold text-slate-800 truncate">{story.title}</h3>
+                      <p className="mt-0.5 text-[10px] text-slate-400">As a {story.asA}</p>
                     </div>
                     <div className="ml-4 flex items-center gap-3 shrink-0">
                       <button
                         type="button"
                         onClick={() => onStoryStatusChange(story.id, nextS)}
-                        className="rounded-lg border border-white/10 px-2 py-1 text-[10px] text-slate-400 hover:border-violet-500/50 hover:text-violet-300 transition-colors"
+                        className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-medium text-slate-500 hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                       >
                         → {nextS === "in_progress" ? "In Progress" : nextS === "done" ? "Done" : "To Do"}
                       </button>
-                      <div className="text-right text-xs text-slate-500">
+                      <div className="text-right text-xs text-slate-400">
                         <div className="flex items-center gap-1.5 justify-end">
                           <GitPullRequest className="h-3.5 w-3.5" aria-hidden="true" />
                           PR #{i + 14}
                         </div>
                         <div className="mt-1 font-mono text-[10px]">
-                          {s === "done" ? `commit: ${story.id.toLowerCase().replace("-", "")}` : "—"}
+                          {s === "done" ? `${story.id.toLowerCase().replace("-", "")}` : "—"}
                         </div>
                       </div>
                     </div>
@@ -785,30 +808,32 @@ function BuildScreen({
           </Card>
 
           <div className="space-y-5">
-            <Card>
-              <h2 className="mb-4 text-sm font-semibold text-white">Sprint Health</h2>
-              <div className="space-y-3">
+            <Card className="p-5">
+              <h2 className="mb-4 text-sm font-bold text-slate-900">Sprint Health</h2>
+              <div className="space-y-2.5">
                 {([
-                  [CheckCircle2, `${doneCount} stories done`,         "text-emerald-300"],
-                  [Activity,     `${inProgCount} in progress`,        "text-blue-300"],
-                  [Clock,        `${stories.length - doneCount - inProgCount} to do`, "text-yellow-300"],
+                  [CheckCircle2, `${doneCount} stories done`,         "text-emerald-600"],
+                  [Activity,     `${inProgCount} in progress`,        "text-blue-600"],
+                  [Clock,        `${stories.length - doneCount - inProgCount} to do`, "text-amber-600"],
                   [AlertTriangle,stories.length === 0 ? "No backlog yet" : "0 blockers", "text-slate-400"],
                 ] as [React.ElementType, string, string][]).map(([Icon, text, color]) => (
-                  <div key={text} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+                  <div key={text} className="flex items-center gap-3 rounded-lg border border-slate-100 bg-slate-50 p-3">
                     <Icon className={cn("h-4 w-4", color)} aria-hidden="true" />
-                    <span className="text-sm text-slate-300">{text}</span>
+                    <span className="text-sm text-slate-700">{text}</span>
                   </div>
                 ))}
               </div>
             </Card>
 
-            <Card>
-              <h2 className="mb-4 text-sm font-semibold text-white">Velocity</h2>
+            <Card className="p-5">
+              <h2 className="mb-4 text-sm font-bold text-slate-900">Velocity</h2>
               <div className="flex h-32 items-end gap-2">
                 {[0.4, 0.55, 0.65, 0.5, 0.75, 0.8, pct / 100].map((h, i) => (
                   <div key={i} className="flex flex-1 flex-col items-center gap-1">
-                    <div className="w-full rounded-t-lg bg-blue-500/60" style={{ height: `${h * 100}%` }} />
-                    <span className="text-[9px] text-slate-600">W{i + 1}</span>
+                    <div className="w-full rounded-t bg-blue-100" style={{ height: `${h * 100}%` }}>
+                      <div className="w-full h-full rounded-t bg-blue-500/60" />
+                    </div>
+                    <span className="text-[9px] font-mono text-slate-400">W{i + 1}</span>
                   </div>
                 ))}
               </div>
@@ -860,10 +885,10 @@ function VerifyScreen({ activeIdea }: { activeIdea: IdeaRecord | null }) {
         action={
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Coverage</p>
-              <p className="text-lg font-bold text-white">{coverage}%</p>
+              <p className="text-[10px] font-mono font-semibold uppercase tracking-[0.16em] text-slate-400">Coverage</p>
+              <p className="text-xl font-bold text-slate-900 font-mono">{coverage}%</p>
             </div>
-            <button type="button" className="rounded-xl bg-rose-500/15 px-4 py-2.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/20 transition-colors">
+            <button type="button" className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors">
               Run Gap Scan
             </button>
           </div>
@@ -874,58 +899,60 @@ function VerifyScreen({ activeIdea }: { activeIdea: IdeaRecord | null }) {
         <EmptyState
           icon={ShieldCheck}
           title="Requirements & backlog needed"
-          body="Complete Draft and Breakdown modules to generate the full traceability matrix linking requirements to stories, commits, and tests."
+          body="Complete Draft and Breakdown modules to generate the full traceability matrix."
         />
       ) : (
         <div className="space-y-5">
-          <Card className="p-0 overflow-hidden">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="p-4">Requirement</th>
-                  <th className="p-4">Epic</th>
-                  <th className="p-4">Story</th>
-                  <th className="p-4">Commit</th>
-                  <th className="p-4">Test</th>
-                  <th className="p-4">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.id} className="border-t border-white/10 text-slate-300 hover:bg-white/[0.02] transition-colors">
-                    <td className="p-4">
-                      <span className="font-mono text-[10px] text-blue-400">{row.id}</span>
-                      <p className="text-xs text-slate-400 mt-0.5">{row.requirement.split(": ")[1]}</p>
-                    </td>
-                    <td className="p-4 text-xs text-slate-400">{row.epic}</td>
-                    <td className="p-4 text-xs font-mono text-slate-400">{row.story}</td>
-                    <td className="p-4">
-                      {row.commit
-                        ? <span className="rounded border border-blue-400/20 bg-blue-400/10 px-2 py-0.5 font-mono text-[10px] text-blue-400">{row.commit}</span>
-                        : <span className="rounded border border-rose-500/20 bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold uppercase text-rose-400">Missing</span>}
-                    </td>
-                    <td className="p-4">
-                      {row.testCase
-                        ? <span className="rounded border border-emerald-400/20 bg-emerald-400/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400">{row.testCase}</span>
-                        : <span className="rounded border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-400">No Test</span>}
-                    </td>
-                    <td className="p-4"><StatusPill status={row.status} /></td>
+          <Card className="overflow-hidden p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 text-xs font-mono uppercase tracking-wide text-slate-500 border-b border-slate-200">
+                  <tr>
+                    <th className="px-4 py-3">Requirement</th>
+                    <th className="px-4 py-3">Epic</th>
+                    <th className="px-4 py-3">Story</th>
+                    <th className="px-4 py-3">Commit</th>
+                    <th className="px-4 py-3">Test</th>
+                    <th className="px-4 py-3">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((row, idx) => (
+                    <tr key={row.id} className={cn("border-t border-slate-100 transition-colors hover:bg-slate-50", idx % 2 === 0 ? "" : "bg-slate-50/50")}>
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-[10px] text-blue-600 font-semibold">{row.id}</span>
+                        <p className="text-xs text-slate-600 mt-0.5">{row.requirement.split(": ")[1]}</p>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-slate-500">{row.epic}</td>
+                      <td className="px-4 py-3 text-xs font-mono text-slate-500">{row.story}</td>
+                      <td className="px-4 py-3">
+                        {row.commit
+                          ? <span className="rounded border border-blue-200 bg-blue-50 px-2 py-0.5 font-mono text-[10px] text-blue-700">{row.commit}</span>
+                          : <span className="rounded border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-bold uppercase text-red-600">Missing</span>}
+                      </td>
+                      <td className="px-4 py-3">
+                        {row.testCase
+                          ? <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] text-emerald-700">{row.testCase}</span>
+                          : <span className="rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-600">No Test</span>}
+                      </td>
+                      <td className="px-4 py-3"><StatusPill status={row.status} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Card>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {[
-              { icon: ShieldCheck, label: "Coverage",      value: `${coverage}%`,                                  color: "text-emerald-300", note: "requirements traced" },
-              { icon: AlertTriangle,label: "Gaps Detected", value: `${rows.filter(r => r.status === "missing").length}`,  color: "text-rose-300",    note: "missing artifacts" },
-              { icon: CheckCircle2, label: "Validated",    value: `${rows.filter(r => r.status === "complete").length}`, color: "text-blue-300",    note: "fully traced" },
+              { icon: ShieldCheck,  label: "Coverage",      value: `${coverage}%`,                                  color: "text-emerald-700", bg: "bg-emerald-50", note: "requirements traced" },
+              { icon: AlertTriangle,label: "Gaps Detected", value: `${rows.filter(r => r.status === "missing").length}`, color: "text-rose-700",    bg: "bg-rose-50",    note: "missing artifacts" },
+              { icon: CheckCircle2, label: "Validated",     value: `${rows.filter(r => r.status === "complete").length}`, color: "text-blue-700",    bg: "bg-blue-50",    note: "fully traced" },
             ].map((s) => (
-              <Card key={s.label}>
+              <Card key={s.label} className={cn("p-5", s.bg)}>
                 <s.icon className={cn("h-5 w-5 mb-4", s.color)} aria-hidden="true" />
-                <div className={cn("text-2xl font-bold", s.color)}>{s.value}</div>
-                <div className="mt-1 text-sm font-medium text-white">{s.label}</div>
+                <div className={cn("text-3xl font-bold font-mono", s.color)}>{s.value}</div>
+                <div className="mt-1 text-sm font-bold text-slate-800">{s.label}</div>
                 <p className="mt-1 text-xs text-slate-500">{s.note}</p>
               </Card>
             ))}
@@ -952,7 +979,7 @@ function InsightScreen({ activeIdea }: { activeIdea: IdeaRecord | null }) {
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.mermaid) {
-      window.mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
+      window.mermaid.initialize({ startOnLoad: true, theme: "default", securityLevel: "loose" });
     }
   }, []);
 
@@ -972,10 +999,10 @@ function InsightScreen({ activeIdea }: { activeIdea: IdeaRecord | null }) {
   const score = Math.round((completeness.filter(Boolean).length / completeness.length) * 100);
 
   const kpis = [
-    { icon: Gauge,         label: "Product Completeness", value: `${score}%`,   note: `${completeness.filter(Boolean).length}/4 phases done` },
-    { icon: Activity,      label: "Delivery Progress",    value: score > 75 ? "On Track" : "In Progress", note: "Sprint 1" },
-    { icon: ShieldCheck,   label: "Backlog Health",       value: activeIdea?.backlog ? `${activeIdea.backlog.epics.length} epics` : "—", note: "stories generated" },
-    { icon: AlertTriangle, label: "Risk Level",           value: score > 50 ? "Low" : "Medium", note: "automated scan" },
+    { icon: Gauge,         label: "Product Completeness", value: `${score}%`,   note: `${completeness.filter(Boolean).length}/4 phases done`, color: "text-blue-700", bg: "bg-blue-50" },
+    { icon: Activity,      label: "Delivery Progress",    value: score > 75 ? "On Track" : "In Progress", note: "Sprint 1", color: "text-emerald-700", bg: "bg-emerald-50" },
+    { icon: ShieldCheck,   label: "Backlog Health",       value: activeIdea?.backlog ? `${activeIdea.backlog.epics.length} epics` : "—", note: "stories generated", color: "text-violet-700", bg: "bg-violet-50" },
+    { icon: AlertTriangle, label: "Risk Level",           value: score > 50 ? "Low" : "Medium", note: "automated scan", color: "text-amber-700", bg: "bg-amber-50" },
   ];
 
   return (
@@ -988,25 +1015,25 @@ function InsightScreen({ activeIdea }: { activeIdea: IdeaRecord | null }) {
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 mb-5">
         {kpis.map((k) => (
-          <Card key={k.label}>
-            <k.icon className="h-5 w-5 text-blue-300 mb-4" aria-hidden="true" />
-            <div className="text-2xl font-bold text-white">{k.value}</div>
-            <div className="mt-1 text-sm text-slate-400">{k.label}</div>
-            <p className="mt-1 text-xs text-slate-600">{k.note}</p>
+          <Card key={k.label} className={cn("p-5", k.bg)}>
+            <k.icon className={cn("h-5 w-5 mb-4", k.color)} aria-hidden="true" />
+            <div className={cn("text-3xl font-bold font-mono", k.color)}>{k.value}</div>
+            <div className="mt-1 text-sm font-bold text-slate-800">{k.label}</div>
+            <p className="mt-1 text-xs text-slate-500">{k.note}</p>
           </Card>
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        <Card>
-          <h2 className="mb-5 text-sm font-semibold text-white">Architecture Diagram</h2>
-          <div className="rounded-2xl border border-white/[0.06] bg-black/40 p-6 min-h-64 overflow-x-auto flex justify-center">
+        <Card className="p-5">
+          <h2 className="mb-5 text-sm font-bold text-slate-900">Architecture Diagram</h2>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-6 min-h-64 overflow-x-auto flex justify-center">
             <div ref={mermaidRef} className="mermaid text-sm">{mermaidCode}</div>
           </div>
         </Card>
 
-        <Card>
-          <h2 className="mb-5 text-sm font-semibold text-white">AI Progress Summary</h2>
+        <Card className="p-5">
+          <h2 className="mb-5 text-sm font-bold text-slate-900">AI Progress Summary</h2>
           <div className="space-y-3">
             {[
               `Idea captured: ${activeIdea ? "✓ structured" : "pending"}`,
@@ -1014,8 +1041,8 @@ function InsightScreen({ activeIdea }: { activeIdea: IdeaRecord | null }) {
               `Requirements: ${activeIdea?.requirements ? `✓ PRD/BRD/FRD ready (${activeIdea.requirements.frd.functionalRequirements.length} FRs)` : "pending"}`,
               `Backlog: ${activeIdea?.backlog ? `✓ ${activeIdea.backlog.epics.reduce((a, e) => a + e.stories.length, 0)} stories across ${activeIdea.backlog.epics.length} epics` : "pending"}`,
             ].map((item) => (
-              <div key={item} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-[#0B0F14] p-4 text-sm text-slate-300 leading-relaxed">
-                <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-300" aria-hidden="true" />
+              <div key={item} className="flex items-start gap-3 rounded-lg border border-slate-100 bg-slate-50 p-4 text-sm text-slate-700 leading-relaxed">
+                <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" aria-hidden="true" />
                 {item}
               </div>
             ))}
@@ -1041,27 +1068,35 @@ const AI_HINTS: Record<ModuleId, string[]> = {
 function AIAssistantPanel({ activeModule }: { activeModule: ModuleId }) {
   const hints = AI_HINTS[activeModule];
   return (
-    <aside className="hidden w-72 shrink-0 border-l border-white/10 bg-[#0D121A] p-5 xl:flex xl:flex-col" aria-label="AI Assistant">
+    <aside
+      className="hidden w-64 shrink-0 border-l border-slate-200 bg-slate-50 p-5 xl:flex xl:flex-col"
+      aria-label="AI Assistant"
+      data-testid="ai-assistant-panel"
+    >
       <div className="mb-5 flex items-center gap-3">
-        <div className="rounded-2xl bg-blue-500/15 p-3">
-          <Sparkles className="h-5 w-5 text-blue-300" aria-hidden="true" />
+        <div className="rounded-xl bg-blue-50 border border-blue-100 p-2.5">
+          <Sparkles className="h-4 w-4 text-blue-600" aria-hidden="true" />
         </div>
         <div>
-          <h2 className="font-semibold text-white">AI Assistant</h2>
-          <p className="text-xs text-slate-500">Context-aware guidance</p>
+          <h2 className="text-sm font-bold text-slate-900">AI Assistant</h2>
+          <p className="text-xs text-slate-400">Context-aware guidance</p>
         </div>
       </div>
-      <ul className="space-y-3">
+      <ul className="space-y-2.5">
         {hints.map((h) => (
-          <li key={h} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-relaxed text-slate-300">{h}</li>
+          <li key={h} className="rounded-lg border border-slate-200 bg-white p-3.5 text-xs leading-relaxed text-slate-600 shadow-sm">{h}</li>
         ))}
       </ul>
-      <div className="mt-6 rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4">
-        <h3 className="text-sm font-semibold text-blue-200">Quick Actions</h3>
-        <div className="mt-4 space-y-2">
+      <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50 p-4">
+        <h3 className="text-xs font-bold text-blue-800 mb-3">Quick Actions</h3>
+        <div className="space-y-1.5">
           {["Generate stories", "Summarise sprint", "Detect blockers", "Run validation"].map((a) => (
-            <button key={a} type="button" className="flex w-full items-center justify-between rounded-xl border border-white/10 px-3 py-2 text-left text-sm text-slate-300 hover:bg-white/5 transition-colors">
-              {a}<ArrowRight className="h-4 w-4 text-slate-500" aria-hidden="true" />
+            <button
+              key={a}
+              type="button"
+              className="flex w-full items-center justify-between rounded-lg border border-blue-100 bg-white px-3 py-2 text-left text-xs font-medium text-slate-700 hover:border-blue-200 hover:bg-blue-50 transition-colors"
+            >
+              {a}<ArrowRight className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
             </button>
           ))}
         </div>
@@ -1085,7 +1120,6 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
   const [error, setError] = useState<string | null>(null);
   const [health, setHealth] = useState<{ mode: string; connected: boolean } | null>(null);
 
-  // Derive the active idea from saved ideas
   const activeIdea = useMemo<IdeaRecord | null>(() => {
     if (!savedIdeas.length) return null;
     if (activeIdeaId) {
@@ -1101,14 +1135,13 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
     )[0];
   }, [savedIdeas, structureResponse?.ideaId]);
 
-  // Load ideas on mount
   const refreshIdeas = useCallback(async () => {
     try {
       const res = await fetch("/api/ideas", { cache: "no-store" });
       if (!res.ok) return;
       const data = (await res.json()) as IdeaListResponse;
       setSavedIdeas(data.items);
-    } catch { /* silent — non-fatal */ }
+    } catch { /* silent */ }
   }, []);
 
   useEffect(() => {
@@ -1122,7 +1155,6 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
     void fetchHealth();
   }, [refreshIdeas]);
 
-  // API actions
   const runStructuring = useCallback(async () => {
     if (!rawIdea.trim()) return;
     setStructuring(true);
@@ -1206,7 +1238,6 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
 
   const runStoryStatusChange = useCallback(async (storyId: string, status: StoryStatus) => {
     if (!activeIdea) return;
-    // Optimistic update
     setSavedIdeas((prev) =>
       prev.map((idea) =>
         idea.ideaId !== activeIdea.ideaId
@@ -1232,7 +1263,7 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
         `/api/ideas/${activeIdea.ideaId}/backlog/stories/${storyId}`,
         { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) },
       );
-      if (!res.ok) await refreshIdeas(); // revert on failure
+      if (!res.ok) await refreshIdeas();
     } catch {
       await refreshIdeas();
     }
@@ -1240,22 +1271,39 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
 
   // Sidebar
   const sidebarContent = (
-    <aside className="w-64 xl:w-72 shrink-0 border-r border-white/5 bg-[#0B0F14] flex flex-col h-full relative z-20" aria-label="Workspace sidebar">
+    <aside
+      className="w-60 xl:w-64 shrink-0 border-r border-slate-200 bg-slate-50 flex flex-col h-full"
+      aria-label="Workspace sidebar"
+      data-testid="workspace-sidebar"
+    >
       <div className="p-5">
-        <div className="mb-8 flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 font-bold text-white shadow-xl shadow-blue-500/20 ring-1 ring-white/10" role="img" aria-label="BuildCopilot logo">F</div>
+        {/* Logo */}
+        <div className="mb-7 flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm" aria-label="BuildCopilot logo">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
           <div>
-            <h2 className="text-lg font-bold text-white tracking-tight leading-none">BuildCopilot</h2>
-            <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">Intelligence OS</p>
+            <h2 className="text-sm font-bold text-slate-900 tracking-tight leading-none">BuildCopilot</h2>
+            <p className="mt-0.5 text-[10px] font-mono font-semibold uppercase tracking-[0.16em] text-slate-400">Intelligence OS</p>
           </div>
         </div>
 
-        <div className="group mb-6 flex items-center gap-2 rounded-2xl border border-white/5 bg-white/[0.02] px-4 py-2.5 text-xs text-slate-500 cursor-pointer hover:border-white/20 hover:bg-white/[0.04] transition-all" role="button" tabIndex={0} aria-label="Search workspace">
-          <Search className="h-4 w-4 group-hover:text-blue-400 transition-colors" aria-hidden="true" /> Search workspace
+        {/* Search */}
+        <div
+          className="mb-5 flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-400 cursor-pointer hover:border-slate-300 transition-all shadow-sm"
+          role="button"
+          tabIndex={0}
+          aria-label="Search workspace"
+          data-testid="workspace-search"
+        >
+          <Search className="h-3.5 w-3.5" aria-hidden="true" /> Search workspace
         </div>
 
+        {/* Nav */}
         <nav aria-label="Main navigation">
-          <ul className="space-y-1.5" role="list">
+          <ul className="space-y-1" role="list">
             {MODULES.map((m) => {
               const Icon = m.icon;
               const active = activeModule === m.id;
@@ -1265,16 +1313,19 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
                     type="button"
                     onClick={() => setActiveModule(m.id)}
                     aria-current={active ? "page" : undefined}
+                    data-testid={`nav-${m.id}`}
                     className={cn(
-                      "group flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-300",
-                      active ? "bg-white/5 text-white shadow-sm ring-1 ring-white/10" : "text-slate-500 hover:bg-white/[0.03] hover:text-white"
+                      "group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                      active
+                        ? "bg-white shadow-sm text-blue-600 border border-slate-200"
+                        : "text-slate-500 hover:bg-white/60 hover:text-slate-800"
                     )}
                   >
                     <div className={cn(
-                      "rounded-xl p-2 transition-all duration-500 group-hover:scale-110", 
-                      active ? `bg-gradient-to-br ${m.accent} shadow-lg shadow-blue-500/20` : "bg-white/5"
+                      "rounded-lg p-1.5 transition-all",
+                      active ? m.accent : "bg-transparent"
                     )}>
-                      <Icon className={cn("h-4 w-4", active ? "text-white" : "group-hover:text-blue-300")} aria-hidden="true" />
+                      <Icon className="h-4 w-4" aria-hidden="true" />
                     </div>
                     {m.label}
                   </button>
@@ -1285,10 +1336,12 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
         </nav>
       </div>
 
-      {/* Idea switcher */}
+      {/* Ideas list */}
       {savedIdeas.length > 0 && (
-        <div className="mx-5 mb-3">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-600 px-1">Ideas ({savedIdeas.length})</p>
+        <div className="mx-4 mb-3">
+          <p className="mb-2 text-[10px] font-mono font-semibold uppercase tracking-[0.18em] text-slate-400 px-1">
+            Ideas ({savedIdeas.length})
+          </p>
           <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
             {savedIdeas.map((idea) => {
               const isActive = idea.ideaId === activeIdea?.ideaId;
@@ -1298,10 +1351,10 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
                     type="button"
                     onClick={() => { setActiveIdeaId(idea.ideaId); setActiveModule("capture"); }}
                     className={cn(
-                      "w-full rounded-xl border px-3 py-2 pr-8 text-left text-[11px] transition-all",
+                      "w-full rounded-lg border px-3 py-2 pr-8 text-left text-[11px] transition-all font-medium",
                       isActive
-                        ? "border-blue-500/40 bg-blue-500/10 text-white"
-                        : "border-white/5 bg-white/[0.02] text-slate-500 hover:border-white/10 hover:text-slate-300"
+                        ? "border-blue-200 bg-white text-blue-700 shadow-sm"
+                        : "border-transparent text-slate-400 hover:border-slate-200 hover:text-slate-700 hover:bg-white"
                     )}
                   >
                     <span className="line-clamp-1">{idea.rawIdea.slice(0, 48)}{idea.rawIdea.length > 48 ? "…" : ""}</span>
@@ -1310,7 +1363,7 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
                     type="button"
                     onClick={(e) => { e.stopPropagation(); void runDeleteIdea(idea.ideaId); }}
                     title="Delete idea"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-600 hover:text-rose-400 transition-all"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-slate-300 hover:text-rose-500 transition-all"
                   >
                     <Trash2 className="h-3 w-3" />
                   </button>
@@ -1321,22 +1374,30 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
         </div>
       )}
 
-      <div className="mt-auto p-5">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-          <div className="flex items-center gap-2 text-sm font-medium text-white mb-3">
-            <Rocket className="h-4 w-4 text-blue-300" aria-hidden="true" /> MVP Status
+      {/* Bottom */}
+      <div className="mt-auto p-4">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-800 mb-3">
+            <Rocket className="h-3.5 w-3.5 text-blue-600" aria-hidden="true" /> MVP Status
           </div>
-          <div className="h-1.5 rounded-full bg-white/10" role="progressbar" aria-valuenow={activeIdea ? 58 : 10} aria-valuemin={0} aria-valuemax={100}>
-            <div className="h-1.5 rounded-full bg-blue-500 transition-all" style={{ width: activeIdea ? "58%" : "10%" }} />
+          <div
+            className="h-1.5 rounded-full bg-slate-100"
+            role="progressbar"
+            aria-valuenow={activeIdea ? 58 : 10}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <div className="h-1.5 rounded-full bg-blue-600 transition-all" style={{ width: activeIdea ? "58%" : "10%" }} />
           </div>
-          <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-slate-600">
+          <p className="mt-2 text-[10px] font-mono font-semibold uppercase tracking-[0.16em] text-slate-400">
             {activeIdea ? "Core loop 58% configured" : "Capture to begin"}
           </p>
         </div>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="mt-3 w-full rounded-xl border border-white/10 px-3 py-2 text-xs text-slate-500 hover:text-slate-300 hover:border-white/20 transition-colors text-center"
+          data-testid="signout-btn"
+          className="mt-2.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 hover:border-slate-300 transition-colors text-center shadow-sm"
         >
           Sign out
         </button>
@@ -1345,103 +1406,89 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
   );
 
   return (
-    <div className="min-h-dvh bg-[#080B10] text-slate-200 selection:bg-blue-500/30 font-sora relative overflow-hidden">
-      {/* Background Intelligence Glows */}
-      <div className="fixed inset-0 pointer-events-none z-0" aria-hidden="true">
-        <motion.div
-          animate={{
-            background: activeModule 
-              ? `radial-gradient(circle at 50% 50%, ${activeModule === 'capture' ? '#7c3aed11' : activeModule === 'strategy' ? '#2563eb11' : '#05966911'} 0%, transparent 70%)`
-              : 'radial-gradient(circle at 50% 50%, #2563eb0a 0%, transparent 70%)'
-          }}
-          className="absolute inset-0 transition-all duration-1000 ease-in-out"
-        />
-        <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-blue-600/5 rounded-full blur-[140px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-purple-600/5 rounded-full blur-[140px]" />
-      </div>
-
-      <div className="flex h-dvh overflow-hidden relative z-10">
+    <div
+      className="min-h-dvh bg-slate-50 text-slate-900 selection:bg-blue-100 relative"
+      data-testid="workspace-root"
+    >
+      <div className="flex h-dvh overflow-hidden">
         {sidebarContent}
 
-        <main className="flex-1 flex flex-col min-w-0 bg-transparent">
+        <main className="flex-1 flex flex-col min-w-0 bg-slate-50">
           {/* Topbar */}
-          <div className="shrink-0 border-b border-white/5 bg-[#080B10]/60 px-8 py-5 backdrop-blur-xl z-20">
+          <div
+            className="shrink-0 border-b border-slate-200 bg-white px-6 py-3.5 shadow-sm z-10"
+            data-testid="workspace-topbar"
+          >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2.5 rounded-2xl border border-white/5 bg-white/5 px-3 py-1.5 shadow-sm">
-                  <Users className="h-4 w-4 text-blue-400" aria-hidden="true" />
-                  <span className="text-xs font-bold tracking-tight text-white">{userProfile.project}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-sm">
+                  <Users className="h-3.5 w-3.5 text-blue-600" aria-hidden="true" />
+                  <span className="text-xs font-bold text-slate-800">{userProfile.project}</span>
                 </div>
-                <span className="text-white/10">/</span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">{userProfile.role}</span>
+                <span className="text-slate-300">/</span>
+                <span className="text-[10px] font-mono font-semibold uppercase tracking-[0.15em] text-slate-400">{userProfile.role}</span>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 {activeIdea && (
-                  <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                  <div
+                    className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-700"
+                    data-testid="context-loaded-badge"
+                  >
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     Project Context Loaded
                   </div>
                 )}
                 {health && (
                   <div className={cn(
-                    "flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-widest transition-all",
-                    health.connected ? "border-blue-500/20 bg-blue-500/5 text-blue-400" : "border-amber-500/20 bg-amber-500/5 text-amber-400"
+                    "flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] transition-all",
+                    health.connected
+                      ? "border-blue-200 bg-blue-50 text-blue-700"
+                      : "border-amber-200 bg-amber-50 text-amber-700"
                   )}>
                     <Gauge className="h-3 w-3" />
-                    {health.mode === "supabase" ? "Supabase Cloud" : "Local Engine"} • {health.connected ? "Active" : "Disconnected"}
+                    {health.mode}
                   </div>
                 )}
-                <button
-                  type="button"
-                  onClick={() => { setRawIdea(""); setActiveIdeaId(null); setStructureResponse(null); setActiveModule("capture"); }}
-                  className="group flex items-center gap-2 rounded-xl bg-white/[0.03] border border-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/5 hover:border-white/20 transition-all active:scale-95"
-                >
-                  <Plus className="h-4 w-4 group-hover:rotate-90 transition-transform" aria-hidden="true" /> New Idea
-                </button>
-                <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 p-px shadow-lg shadow-blue-500/10">
-                  <div className="h-full w-full rounded-[14px] bg-[#0B0F14] flex items-center justify-center text-[11px] font-bold text-white">
-                    {userProfile.name.slice(0, 2).toUpperCase()}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar">
-            {/* Error Toast */}
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                  role="alert"
-                  className="fixed top-8 right-8 z-50 flex items-center gap-4 rounded-3xl border border-rose-500/20 bg-[#1A0A0F]/95 p-4 text-sm font-medium text-rose-200 shadow-2xl backdrop-blur-2xl ring-1 ring-rose-500/10"
+          {/* Error Toast */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                role="alert"
+                data-testid="error-toast"
+                className="fixed top-6 right-6 z-50 flex items-center gap-4 rounded-xl border border-red-200 bg-white p-4 text-sm font-medium text-red-700 shadow-lg"
+              >
+                <div className="rounded-lg bg-red-50 border border-red-100 p-2">
+                  <AlertCircle className="h-4 w-4 text-red-600" aria-hidden="true" />
+                </div>
+                <span>{error}</span>
+                <button
+                  type="button"
+                  onClick={() => setError(null)}
+                  className="ml-2 rounded-lg p-1.5 hover:bg-slate-100 transition-colors"
                 >
-                  <div className="rounded-xl bg-rose-500/10 p-2">
-                    <AlertCircle className="h-5 w-5 text-rose-500" aria-hidden="true" />
-                  </div>
-                  <span>{error}</span>
-                  <button
-                    type="button"
-                    onClick={() => setError(null)}
-                    className="ml-4 rounded-xl p-2 hover:bg-white/5 transition-colors"
-                  >
-                    <X className="h-4 w-4 text-slate-400" />
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <X className="h-4 w-4 text-slate-400" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
+          {/* Module content */}
+          <div className="flex-1 overflow-y-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeModule}
-                initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="p-8 lg:p-12"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="p-6 lg:p-8"
               >
                 {activeModule === "capture" && (
                   <CaptureScreen
