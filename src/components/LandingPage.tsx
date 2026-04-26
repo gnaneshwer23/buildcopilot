@@ -21,19 +21,26 @@ interface LandingPageProps {
 const features = [
   {
     icon: IconZap,
-    title: "Capture With Context",
-    desc: "Convert fragmented ideas into structured problem statements, users, goals, and constraints in one step.",
+    title: "Problem-to-Plan In Minutes",
+    desc: "Convert rough thoughts into structured outcomes, assumptions, and measurable goals without context loss.",
   },
   {
     icon: IconCpu,
-    title: "Build With Traceability",
-    desc: "Generate requirements and backlog with direct linkage from strategy to story and delivery status.",
+    title: "Requirements With Lineage",
+    desc: "Every requirement traces to strategy, then to stories, then to delivery evidence in one continuous graph.",
   },
   {
     icon: IconShield,
-    title: "Verify Before Release",
-    desc: "Detect coverage gaps early with requirement-to-validation checks before your sprint closes.",
+    title: "Verification As A System",
+    desc: "Coverage gaps surface before release, so teams respond to risk while there is still time to act.",
   },
+];
+
+const metrics = [
+  { value: "7", label: "Connected modules" },
+  { value: "100%", label: "Traceability loop" },
+  { value: "< 15m", label: "Idea to actionable plan" },
+  { value: "24/7", label: "Execution intelligence" },
 ];
 
 const stages = [
@@ -57,10 +64,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   };
 
   return (
-    <div className="min-h-dvh bg-[#0A0F15] text-white selection:bg-cyan-500/30">
+    <div className="min-h-dvh bg-[#070D14] text-white selection:bg-cyan-500/30">
       <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
         <motion.div
-          className="absolute -top-24 left-[-12%] h-96 w-96 rounded-full bg-cyan-500/15 blur-[120px]"
+          className="absolute -top-24 left-[-12%] h-96 w-96 rounded-full bg-cyan-500/20 blur-[130px]"
           animate={
             reduceMotion
               ? undefined
@@ -73,7 +80,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           }
         />
         <motion.div
-          className="absolute top-[36%] right-[-10%] h-96 w-96 rounded-full bg-blue-500/20 blur-[120px]"
+          className="absolute top-[36%] right-[-10%] h-96 w-96 rounded-full bg-blue-500/25 blur-[130px]"
           animate={
             reduceMotion
               ? undefined
@@ -86,7 +93,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           }
         />
         <motion.div
-          className="absolute bottom-[-8%] left-[30%] h-72 w-72 rounded-full bg-emerald-500/10 blur-[120px]"
+          className="absolute bottom-[-8%] left-[30%] h-72 w-72 rounded-full bg-emerald-500/15 blur-[120px]"
           animate={
             reduceMotion
               ? undefined
@@ -100,30 +107,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         />
       </div>
 
-      <header className="sticky top-0 z-30 border-b border-white/5 bg-[#0A0F15]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#070D14]/80 backdrop-blur-xl">
         <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8" aria-label="Site navigation">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 font-bold text-white shadow-lg shadow-cyan-500/20" aria-hidden="true">
+            <div className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-cyan-300 to-blue-500 font-bold text-white shadow-lg shadow-cyan-500/20" aria-hidden="true">
               F
             </div>
             <span className="text-xl font-bold tracking-tight">BuildCopilot</span>
           </div>
           <ul className="hidden items-center gap-8 text-sm font-medium text-slate-300 md:flex" role="list">
             <li><a href="#platform" className="transition-colors hover:text-white">Platform</a></li>
-            <li><a href="#loop" className="transition-colors hover:text-white">Intelligence Loop</a></li>
-            <li><a href="#value" className="transition-colors hover:text-white">Why Teams Switch</a></li>
+            <li><a href="#proof" className="transition-colors hover:text-white">Outcomes</a></li>
+            <li><a href="#loop" className="transition-colors hover:text-white">Execution Loop</a></li>
           </ul>
           <div className="flex items-center gap-2.5">
             <Link
               href="/login"
-              className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+              className="rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10"
             >
               Sign in
             </Link>
             <button
               type="button"
               onClick={onGetStarted}
-              className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-bold text-[#05101A] transition-colors hover:bg-cyan-300"
+              className="rounded-xl bg-cyan-300 px-4 py-2 text-sm font-bold text-[#03101A] transition-colors hover:bg-cyan-200"
             >
               Start now
             </button>
@@ -132,27 +139,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </header>
 
       <main className="mx-auto max-w-7xl px-5 pb-24 pt-10 sm:px-8 sm:pt-16 lg:pt-20">
-        <section id="platform" className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]" aria-labelledby="hero-heading">
+        <section id="platform" className="grid gap-10 lg:grid-cols-[1.08fr_0.92fr]" aria-labelledby="hero-heading">
           <motion.div {...fadeUp}>
             <motion.p
-              className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200"
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-300/30 bg-cyan-300/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-100"
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
             >
-              Delivery Intelligence OS
+              Product Delivery Intelligence OS
             </motion.p>
-            <h1 id="hero-heading" className="mt-6 text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
-              Move from idea to validated delivery without losing context.
+            <h1 id="hero-heading" className="mt-6 text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl xl:text-7xl">
+              Build the product, not the coordination debt.
             </h1>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-              BuildCopilot unifies capture, strategy, requirements, backlog, build and verification into one AI-guided loop so product, engineering and delivery operate from the same source of truth.
+              BuildCopilot collapses ideation, strategy, requirements, backlog, build, verification, and delivery insight into one command surface so teams ship with continuity.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <motion.button
                 type="button"
                 onClick={onGetStarted}
-                className="rounded-2xl bg-cyan-400 px-7 py-3 text-base font-bold text-[#041019] transition-colors hover:bg-cyan-300"
+                className="rounded-2xl bg-cyan-300 px-7 py-3 text-base font-bold text-[#041019] transition-colors hover:bg-cyan-200"
                 whileHover={reduceMotion ? undefined : { y: -2 }}
                 whileTap={reduceMotion ? undefined : { scale: 0.98 }}
               >
@@ -170,13 +177,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           </motion.div>
 
           <motion.div
-            className="rounded-3xl border border-white/10 bg-[#0E1620]/70 p-5 shadow-2xl shadow-cyan-900/25 backdrop-blur-xl sm:p-6"
+            className="rounded-3xl border border-white/15 bg-[#0E1620]/80 p-5 shadow-2xl shadow-cyan-900/30 backdrop-blur-xl sm:p-6"
             initial={{ opacity: 0, y: 26 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.08 }}
             viewport={{ once: true, amount: 0.2 }}
           >
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Live Intelligence Loop</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Live Command Surface</p>
             <motion.div
               className="mt-5 space-y-2.5"
               initial="hidden"
@@ -203,8 +210,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 </motion.div>
               ))}
             </motion.div>
+            <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-3">
+              <div className="mb-2 h-1.5 w-2/5 rounded-full bg-cyan-300/50" />
+              <div className="space-y-1.5">
+                <div className="h-1.5 w-full rounded-full bg-white/10" />
+                <div className="h-1.5 w-4/5 rounded-full bg-white/10" />
+                <div className="h-1.5 w-3/5 rounded-full bg-white/10" />
+              </div>
+            </div>
           </motion.div>
         </section>
+
+        <motion.section id="proof" className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4" {...fadeUp}>
+          {metrics.map((metric) => (
+            <div key={metric.label} className="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4">
+              <p className="text-2xl font-bold text-cyan-200 sm:text-3xl">{metric.value}</p>
+              <p className="mt-1 text-sm text-slate-300">{metric.label}</p>
+            </div>
+          ))}
+        </motion.section>
 
         <motion.section
           id="value"
@@ -275,6 +299,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 {line}
               </motion.div>
             ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="mt-20 rounded-3xl border border-white/15 bg-gradient-to-r from-cyan-300/20 via-blue-400/20 to-emerald-300/20 p-[1px]"
+          {...fadeUp}
+        >
+          <div className="rounded-[22px] bg-[#0B131D] px-6 py-8 sm:px-10 sm:py-10">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-200">Ready To Execute</p>
+                <h3 className="mt-2 text-2xl font-bold text-white sm:text-3xl">Design once. Deliver continuously.</h3>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+                  Start with one idea and leave with strategy, requirements, backlog and verification signals aligned for shipping.
+                </p>
+              </div>
+              <motion.button
+                type="button"
+                onClick={onGetStarted}
+                className="rounded-2xl bg-cyan-300 px-6 py-3 text-sm font-bold text-[#041019] transition-colors hover:bg-cyan-200"
+                whileHover={reduceMotion ? undefined : { y: -2 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+              >
+                Start onboarding
+              </motion.button>
+            </div>
           </div>
         </motion.section>
       </main>
