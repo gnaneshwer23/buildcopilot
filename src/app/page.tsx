@@ -46,8 +46,8 @@ export default function Home() {
 
   if (appState === "loading") {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-5 h-5 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg)" }}>
+        <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: "var(--primary)", borderTopColor: "transparent" }} />
       </div>
     );
   }

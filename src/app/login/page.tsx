@@ -3,8 +3,22 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, Check } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+
+function Logo({ size = 26 }: { size?: number }) {
+  return (
+    <div
+      className="flex items-center justify-center rounded-md"
+      style={{ width: size, height: size, background: "var(--primary)" }}
+    >
+      <svg width={size * 0.42} height={size * 0.42} viewBox="0 0 14 14" fill="none">
+        <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </div>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,116 +52,81 @@ export default function LoginPage() {
     }
   }
 
-  const deliverySteps = [
-    { label: "Idea → Strategy",         sub: "Structured analysis in seconds" },
-    { label: "Strategy → Requirements", sub: "PRD · BRD · FRD by AI" },
-    { label: "Requirements → Backlog",  sub: "Epics & stories, fully traceable" },
-    { label: "Backlog → Insight",       sub: "Full delivery loop, closed" },
+  const valueProps = [
+    { label: "Idea → PRD",          sub: "Structured analysis in seconds" },
+    { label: "PRD → Backlog",       sub: "Stories with acceptance criteria" },
+    { label: "Backlog → Build",     sub: "Tracked execution with traceability" },
+    { label: "Build → Validation",  sub: "Coverage proven before release" },
   ];
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: "#F4F7FE" }}>
-
-      {/* Left — Brand Panel */}
+    <div className="min-h-dvh flex" style={{ background: "var(--bg)" }}>
+      {/* Side panel */}
       <div
-        className="hidden lg:flex w-[480px] xl:w-[520px] shrink-0 flex-col justify-between px-12 py-12 relative overflow-hidden"
-        style={{ background: "linear-gradient(150deg, #3D76F4 0%, #54AEF5 55%, #CACEFA 100%)" }}
+        className="hidden lg:flex w-[440px] xl:w-[480px] shrink-0 flex-col px-10 py-12 justify-between"
+        style={{ background: "var(--surface)", borderRight: "1px solid var(--border)" }}
       >
-        {/* Decorative blobs */}
-        <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20"
-             style={{ background: "radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%)", transform: "translate(30%, -30%);" }} />
-        <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full opacity-15"
-             style={{ background: "radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%)", transform: "translate(-30%, 30%)" }} />
-
-        <motion.div
-          className="relative z-10"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {/* Logo */}
-          <div className="flex items-center gap-3 mb-16">
-            <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
-              <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-                <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <span className="text-white font-bold text-lg tracking-tight">BuildCopilot</span>
-          </div>
-
-          <h2 className="text-3xl font-bold text-white leading-snug tracking-tight mb-3">
-            Your AI-powered<br />delivery intelligence<br />platform.
+        <div>
+          <Link href="/" className="flex items-center gap-2.5 mb-14">
+            <Logo size={26} />
+            <span className="font-semibold text-sm tracking-tight" style={{ color: "var(--text)" }}>BuildCopilot</span>
+          </Link>
+          <h2 className="text-2xl font-semibold tracking-tight leading-[1.15] mb-3" style={{ color: "var(--text)" }}>
+            From idea to validated delivery — one continuous loop.
           </h2>
-          <p className="text-white/70 text-sm leading-relaxed mb-10">
-            From raw idea to validated delivery — one continuous, traceable loop.
+          <p className="text-sm leading-relaxed mb-10" style={{ color: "var(--text-muted)" }}>
+            BuildCopilot connects strategy, requirements, code and validation so your team always knows
+            what shipped matches what was planned.
           </p>
-
-          <div className="space-y-4">
-            {deliverySteps.map((item, i) => (
-              <motion.div
-                key={i}
-                className="flex items-center gap-3.5"
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 0.15 + i * 0.09, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="w-7 h-7 rounded-full bg-white/20 border border-white/30 flex items-center justify-center shrink-0">
-                  <Check className="h-3.5 w-3.5 text-white" />
-                </div>
+          <ul className="space-y-4">
+            {valueProps.map((item) => (
+              <li key={item.label} className="flex items-start gap-3">
+                <span
+                  className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-md shrink-0"
+                  style={{ background: "var(--primary-soft)" }}
+                >
+                  <Check className="h-3 w-3" style={{ color: "var(--primary)" }} />
+                </span>
                 <div>
-                  <p className="text-sm font-semibold text-white">{item.label}</p>
-                  <p className="text-xs text-white/60 mt-0.5">{item.sub}</p>
+                  <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{item.label}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "var(--text-subtle)" }}>{item.sub}</p>
                 </div>
-              </motion.div>
+              </li>
             ))}
-          </div>
-        </motion.div>
-
-        <div className="relative z-10">
-          <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.2)" }}>
-            <p className="text-white/90 text-sm leading-relaxed italic">
-              &ldquo;BuildCopilot eliminated the gap between what we planned and what we shipped.&rdquo;
-            </p>
-            <p className="mt-3 text-white/50 text-xs">— Product Director, Series B SaaS</p>
-          </div>
+          </ul>
         </div>
+        <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
+          &ldquo;BuildCopilot eliminated the gap between what we planned and what we shipped.&rdquo;
+          <span className="block mt-1.5">— Product Director, Series B SaaS</span>
+        </p>
       </div>
 
-      {/* Right — Form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <motion.div
-          className="w-full max-w-[400px]"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2.5 mb-8 lg:hidden">
-            <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shadow-[0_4px_12px_rgba(61,118,244,0.3)]">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <span className="font-bold text-sm" style={{ color: "#0F1433" }}>BuildCopilot</span>
-          </div>
+      {/* Form panel */}
+      <div className="flex-1 flex flex-col">
+        <div className="flex justify-between items-center px-6 py-4 lg:px-10 lg:py-6">
+          <Link href="/" className="lg:hidden flex items-center gap-2">
+            <Logo size={22} />
+            <span className="font-semibold text-sm" style={{ color: "var(--text)" }}>BuildCopilot</span>
+          </Link>
+          <div className="ml-auto"><ThemeToggle /></div>
+        </div>
 
-          <div className="card-lg p-8 sm:p-10">
-            <div className="mb-8">
-              <h1 className="text-2xl font-bold tracking-tight mb-1.5" style={{ color: "#0F1433" }}>
-                {mode === "login" ? "Welcome back" : "Create your account"}
-              </h1>
-              <p className="text-sm" style={{ color: "#64748B" }}>
-                {mode === "login"
-                  ? "Sign in to continue to your workspace."
-                  : "Start building delivery intelligence today."}
-              </p>
-            </div>
+        <div className="flex-1 flex items-center justify-center px-6 pb-12">
+          <div className="w-full max-w-[400px]">
+            <h1 className="text-2xl font-semibold tracking-tight mb-2" style={{ color: "var(--text)" }}>
+              {mode === "login" ? "Welcome back" : "Create your account"}
+            </h1>
+            <p className="text-sm mb-8" style={{ color: "var(--text-muted)" }}>
+              {mode === "login"
+                ? "Sign in to continue to your workspace."
+                : "Start building delivery intelligence today."}
+            </p>
 
             <form onSubmit={handleSubmit} className="space-y-4" data-testid="auth-form">
               {mode === "register" && (
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-[0.14em] mb-1.5" style={{ color: "#64748B" }}>
-                    Your name
+                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "var(--text)" }}>
+                    Name
                   </label>
                   <input
                     data-testid="input-name"
@@ -155,17 +134,13 @@ export default function LoginPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Jane Smith"
-                    className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                    style={{ color: "#0F1433", background: "#F4F7FE", border: "1px solid rgba(202,206,250,0.6)" }}
-                    onFocus={e => { e.target.style.borderColor = "#3D76F4"; e.target.style.boxShadow = "0 0 0 3px rgba(61,118,244,0.12)"; }}
-                    onBlur={e => { e.target.style.borderColor = "rgba(202,206,250,0.6)"; e.target.style.boxShadow = "none"; }}
+                    className="input"
                   />
                 </div>
               )}
-
               <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.14em] mb-1.5" style={{ color: "#64748B" }}>
-                  Email address
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: "var(--text)" }}>
+                  Email
                 </label>
                 <input
                   data-testid="input-email"
@@ -174,15 +149,11 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
                   required
-                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                  style={{ color: "#0F1433", background: "#F4F7FE", border: "1px solid rgba(202,206,250,0.6)" }}
-                  onFocus={e => { e.target.style.borderColor = "#3D76F4"; e.target.style.boxShadow = "0 0 0 3px rgba(61,118,244,0.12)"; }}
-                  onBlur={e => { e.target.style.borderColor = "rgba(202,206,250,0.6)"; e.target.style.boxShadow = "none"; }}
+                  className="input"
                 />
               </div>
-
               <div>
-                <label className="block text-xs font-bold uppercase tracking-[0.14em] mb-1.5" style={{ color: "#64748B" }}>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: "var(--text)" }}>
                   Password
                 </label>
                 <input
@@ -193,21 +164,18 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   required
                   minLength={8}
-                  className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all"
-                  style={{ color: "#0F1433", background: "#F4F7FE", border: "1px solid rgba(202,206,250,0.6)" }}
-                  onFocus={e => { e.target.style.borderColor = "#3D76F4"; e.target.style.boxShadow = "0 0 0 3px rgba(61,118,244,0.12)"; }}
-                  onBlur={e => { e.target.style.borderColor = "rgba(202,206,250,0.6)"; e.target.style.boxShadow = "none"; }}
+                  className="input"
                 />
                 {mode === "register" && (
-                  <p className="mt-1.5 text-xs" style={{ color: "#94A3B8" }}>Minimum 8 characters</p>
+                  <p className="mt-1.5 text-xs" style={{ color: "var(--text-subtle)" }}>Minimum 8 characters</p>
                 )}
               </div>
 
               {error && (
                 <div
                   data-testid="auth-error"
-                  className="rounded-xl px-4 py-3 text-sm"
-                  style={{ background: "#FEF2F2", border: "1px solid #FECACA", color: "#DC2626" }}
+                  className="rounded-lg px-4 py-3 text-sm"
+                  style={{ background: "var(--error-soft)", border: "1px solid var(--error-soft)", color: "var(--error)" }}
                 >
                   {error}
                 </div>
@@ -217,7 +185,8 @@ export default function LoginPage() {
                 data-testid="auth-submit-btn"
                 type="submit"
                 disabled={loading}
-                className="btn-primary w-full justify-center py-3.5 text-base mt-2"
+                className="btn-primary w-full justify-center"
+                style={{ padding: "0.75rem 1rem", fontSize: "0.9375rem" }}
               >
                 {loading
                   ? (mode === "login" ? "Signing in…" : "Creating account…")
@@ -226,19 +195,19 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm" style={{ color: "#64748B" }}>
+            <p className="mt-6 text-center text-sm" style={{ color: "var(--text-muted)" }}>
               {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
               <button
                 data-testid="auth-mode-toggle"
                 onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(""); }}
-                className="font-semibold transition-colors hover:opacity-80"
-                style={{ color: "#3D76F4" }}
+                className="font-semibold transition-colors"
+                style={{ color: "var(--primary)" }}
               >
                 {mode === "login" ? "Sign up" : "Sign in"}
               </button>
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

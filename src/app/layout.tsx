@@ -29,7 +29,15 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${sora.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('bc_theme');if(t!=='light'&&t!=='dark'){t='dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <Providers>
           {children}

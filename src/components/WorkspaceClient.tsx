@@ -14,6 +14,7 @@ import {
   ProductStrategy, RequirementsPack, BacklogPack, StoryStatus,
 } from "@/lib/buildcopilot-types";
 import { generateMermaidFromRequirements } from "@/lib/mermaid-generator";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export type ModuleId = "capture"|"strategy"|"draft"|"breakdown"|"build"|"verify"|"insight";
 
@@ -21,30 +22,41 @@ interface WorkspaceClientProps {
   userProfile: { name: string; role: string; project: string };
 }
 
-// ── Design tokens (inline for Tailwind v4 compat) ─────────────────────────────
+// ── Design tokens (CSS variables — auto-switch with theme) ────────────────────
 const T = {
-  pageBg:      "#F4F7FE",
-  card:        "#FFFFFF",
-  border:      "rgba(202,206,250,0.45)",
-  primary:     "#3D76F4",
-  primaryLight:"#54AEF5",
-  sky:         "#98CDF9",
-  lavender:    "#CACEFA",
-  lavLight:    "#EEF0FD",
-  text:        "#0F1433",
-  muted:       "#64748B",
-  shadow:      "0 4px 24px rgba(61,118,244,0.07), 0 1px 4px rgba(61,118,244,0.04)",
-  shadowHover: "0 8px 40px rgba(61,118,244,0.12), 0 2px 8px rgba(61,118,244,0.06)",
+  pageBg:      "var(--bg)",
+  surface:     "var(--surface)",
+  card:        "var(--card)",
+  cardHover:   "var(--card-hover)",
+  border:      "var(--border)",
+  borderStrong:"var(--border-strong)",
+  primary:     "var(--primary)",
+  primaryLight:"var(--primary)",
+  sky:         "var(--primary)",
+  lavender:    "var(--text-subtle)",
+  lavLight:    "var(--card-hover)",
+  text:        "var(--text)",
+  muted:       "var(--text-muted)",
+  subtle:      "var(--text-subtle)",
+  success:     "var(--success)",
+  successSoft: "var(--success-soft)",
+  error:       "var(--error)",
+  errorSoft:   "var(--error-soft)",
+  warn:        "var(--warn)",
+  warnSoft:    "var(--warn-soft)",
+  primarySoft: "var(--primary-soft)",
+  shadow:      "none",
+  shadowHover: "var(--shadow)",
 } as const;
 
 const MODULES: Array<{ id: ModuleId; label: string; icon: React.ElementType; color: string }> = [
-  { id: "capture",   label: "Capture",   icon: Lightbulb,   color: "#7C3AED" },
-  { id: "strategy",  label: "Strategy",  icon: Target,      color: "#3D76F4" },
-  { id: "draft",     label: "Draft",     icon: FileText,    color: "#D97706" },
-  { id: "breakdown", label: "Breakdown", icon: GitBranch,   color: "#EA580C" },
-  { id: "build",     label: "Build",     icon: Code2,       color: "#059669" },
-  { id: "verify",    label: "Verify",    icon: ShieldCheck, color: "#DC2626" },
-  { id: "insight",   label: "Insight",   icon: BarChart3,   color: "#4F46E5" },
+  { id: "capture",   label: "Capture",   icon: Lightbulb,   color: "var(--text-muted)" },
+  { id: "strategy",  label: "Strategy",  icon: Target,      color: "var(--primary)" },
+  { id: "draft",     label: "Draft",     icon: FileText,    color: "var(--warn)" },
+  { id: "breakdown", label: "Breakdown", icon: GitBranch,   color: "var(--warn)" },
+  { id: "build",     label: "Build",     icon: Code2,       color: "var(--success)" },
+  { id: "verify",    label: "Verify",    icon: ShieldCheck, color: "var(--error)" },
+  { id: "insight",   label: "Insight",   icon: BarChart3,   color: "var(--primary)" },
 ];
 
 function cn(...cls: (string|false|null|undefined)[]) { return cls.filter(Boolean).join(" "); }
@@ -68,9 +80,9 @@ function GradientBtn({ onClick, loading, label = "Run AI", disabled, icon: Icon 
     <button type="button" onClick={onClick} disabled={loading || disabled}
       data-testid="run-ai-btn"
       className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-      style={{ background: "linear-gradient(135deg, #3D76F4, #54AEF5)", boxShadow: "0 4px 14px rgba(61,118,244,0.3)" }}
-      onMouseEnter={e => !loading && !disabled && ((e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(61,118,244,0.4)")}
-      onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 14px rgba(61,118,244,0.3)")}
+      style={{ background: "var(--primary)", boxShadow: "none" }}
+      onMouseEnter={e => !loading && !disabled && ((e.currentTarget as HTMLButtonElement).style.boxShadow = "none")}
+      onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.boxShadow = "none")}
     >
       <BtnIcon className={cn("h-4 w-4", loading && "animate-spin")} />
       {loading ? "Generating…" : label}
@@ -84,8 +96,8 @@ function ModuleHeader({ title, subtitle, icon: Icon, color, action }: {
   return (
     <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
       <div className="flex items-center gap-3.5">
-        <div className="w-11 h-11 rounded-2xl flex items-center justify-center shadow-[0_4px_12px_rgba(61,118,244,0.2)]"
-             style={{ background: "linear-gradient(135deg, #3D76F4, #54AEF5)" }}>
+        <div className="w-11 h-11 rounded-2xl flex items-center justify-center "
+             style={{ background: "var(--primary)" }}>
           <Icon className="h-5 w-5 text-white" />
         </div>
         <div>
@@ -117,21 +129,21 @@ function EmptyState({ icon: Icon, title, body, action }: {
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, React.CSSProperties> = {
-    Done:          { background: "#ECFDF5", color: "#059669", border: "1px solid #A7F3D0" },
-    "In Progress": { background: "#EEF0FD", color: "#3D76F4", border: "1px solid #CACEFA" },
-    "To Do":       { background: "#F4F7FE", color: "#64748B", border: "1px solid rgba(202,206,250,0.5)" },
-    Validated:     { background: "#ECFDF5", color: "#059669", border: "1px solid #A7F3D0" },
-    Partial:       { background: "#FFFBEB", color: "#D97706", border: "1px solid #FDE68A" },
-    Gap:           { background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA" },
-    complete:      { background: "#ECFDF5", color: "#059669", border: "1px solid #A7F3D0" },
-    partial:       { background: "#FFFBEB", color: "#D97706", border: "1px solid #FDE68A" },
-    missing:       { background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA" },
-    High:          { background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA" },
-    Medium:        { background: "#FFFBEB", color: "#D97706", border: "1px solid #FDE68A" },
-    Low:           { background: "#F4F7FE", color: "#64748B", border: "1px solid rgba(202,206,250,0.5)" },
-    Must:          { background: "#EEF0FD", color: "#3D76F4", border: "1px solid #CACEFA" },
-    Should:        { background: "#F3F0FF", color: "#7C3AED", border: "1px solid #DDD6FE" },
-    Could:         { background: "#F4F7FE", color: "#64748B", border: "1px solid rgba(202,206,250,0.5)" },
+    Done:          { background: "var(--success-soft)", color: "var(--success)", border: "1px solid var(--success-soft)" },
+    "In Progress": { background: "var(--primary-soft)", color: "var(--primary)", border: "1px solid var(--border)" },
+    "To Do":       { background: "var(--bg)", color: "var(--text-muted)", border: "1px solid var(--border)" },
+    Validated:     { background: "var(--success-soft)", color: "var(--success)", border: "1px solid var(--success-soft)" },
+    Partial:       { background: "var(--warn-soft)", color: "var(--warn)", border: "1px solid var(--warn-soft)" },
+    Gap:           { background: "var(--error-soft)", color: "var(--error)", border: "1px solid var(--error-soft)" },
+    complete:      { background: "var(--success-soft)", color: "var(--success)", border: "1px solid var(--success-soft)" },
+    partial:       { background: "var(--warn-soft)", color: "var(--warn)", border: "1px solid var(--warn-soft)" },
+    missing:       { background: "var(--error-soft)", color: "var(--error)", border: "1px solid var(--error-soft)" },
+    High:          { background: "var(--error-soft)", color: "var(--error)", border: "1px solid var(--error-soft)" },
+    Medium:        { background: "var(--warn-soft)", color: "var(--warn)", border: "1px solid var(--warn-soft)" },
+    Low:           { background: "var(--bg)", color: "var(--text-muted)", border: "1px solid var(--border)" },
+    Must:          { background: "var(--primary-soft)", color: "var(--primary)", border: "1px solid var(--border)" },
+    Should:        { background: "var(--card-hover)", color: "var(--text-muted)", border: "1px solid var(--border)" },
+    Could:         { background: "var(--bg)", color: "var(--text-muted)", border: "1px solid var(--border)" },
   };
   const s = map[status] ?? map["To Do"];
   return (
@@ -154,7 +166,7 @@ function CaptureScreen({ rawIdea, setRawIdea, structuring, onStructure, activeId
 
   return (
     <div>
-      <ModuleHeader title="BuildCopilot Capture" subtitle="Turn raw ideas into structured product clarity." icon={Lightbulb} color="#7C3AED"
+      <ModuleHeader title="BuildCopilot Capture" subtitle="Turn raw ideas into structured product clarity." icon={Lightbulb} color="var(--text-muted)"
         action={<GradientBtn onClick={onStructure} loading={structuring} label="Generate Structure" disabled={!rawIdea.trim()} />} />
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <Card className="xl:col-span-2 p-6">
@@ -166,10 +178,10 @@ function CaptureScreen({ rawIdea, setRawIdea, structuring, onStructure, activeId
             data-testid="capture-idea-textarea"
             className="mt-3 h-44 w-full resize-none rounded-xl px-4 py-3.5 text-sm outline-none leading-relaxed transition-all"
             style={{ color: T.text, background: T.pageBg, border: `1px solid ${T.border}` }}
-            onFocus={e => { e.target.style.borderColor = T.primary; e.target.style.boxShadow = "0 0 0 3px rgba(61,118,244,0.1)"; }}
+            onFocus={e => { e.target.style.borderColor = T.primary; e.target.style.boxShadow = "0 0 0 3px var(--primary-soft)"; }}
             onBlur={e => { e.target.style.borderColor = T.border; e.target.style.boxShadow = "none"; }}
           />
-          <p className="mt-2 text-xs" style={{ color: "#94A3B8" }}>Be specific about the problem, target users, and value.</p>
+          <p className="mt-2 text-xs" style={{ color: "var(--text-subtle)" }}>Be specific about the problem, target users, and value.</p>
         </Card>
         <Card className="p-6 flex flex-col justify-between">
           <h2 className="text-xs font-bold uppercase tracking-[0.18em] mb-4" style={{ color: T.muted, fontFamily: "var(--font-mono)" }}>AI Clarity Score</h2>
@@ -182,7 +194,7 @@ function CaptureScreen({ rawIdea, setRawIdea, structuring, onStructure, activeId
                   strokeDasharray={circ} strokeDashoffset={circ*(1-score/100)} strokeLinecap="round"/>
                 <defs>
                   <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#3D76F4"/><stop offset="100%" stopColor="#54AEF5"/>
+                    <stop offset="0%" stopColor="var(--primary)"/><stop offset="100%" stopColor="var(--primary)"/>
                   </linearGradient>
                 </defs>
               </svg>
@@ -191,7 +203,7 @@ function CaptureScreen({ rawIdea, setRawIdea, structuring, onStructure, activeId
             <ul className="space-y-2.5 text-xs" style={{ color: T.muted }}>
               {[["Problem", a?.problemStatement],["Target users",a?.targetUsers?.length],["Unique value",a?.usp],["Goals",a?.goals?.length]].map(([l, v]) => (
                 <li key={l as string} className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: v ? "#3D76F4" : T.lavLight, border: `1px solid ${v ? "#3D76F4" : T.lavender}` }}/>
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: v ? "var(--primary)" : T.lavLight, border: `1px solid ${v ? "var(--primary)" : T.lavender}` }}/>
                   {l}
                 </li>
               ))}
@@ -214,12 +226,12 @@ function CaptureScreen({ rawIdea, setRawIdea, structuring, onStructure, activeId
 }
 
 function StrategyScreen({ activeIdea, generating, onRun }: { activeIdea: IdeaRecord|null; generating: boolean; onRun: () => void }) {
-  if (!activeIdea) return <div><ModuleHeader title="BuildCopilot Strategy" subtitle="Define vision, positioning and roadmap." icon={Target} color="#3D76F4"/>
+  if (!activeIdea) return <div><ModuleHeader title="BuildCopilot Strategy" subtitle="Define vision, positioning and roadmap." icon={Target} color="var(--primary)"/>
     <EmptyState icon={Target} title="Capture an idea first" body="Structure your idea in Capture to unlock strategy generation."/></div>;
   const strategy: ProductStrategy|undefined = activeIdea.strategy;
   return (
     <div>
-      <ModuleHeader title="BuildCopilot Strategy" subtitle="Define vision, positioning and roadmap." icon={Target} color="#3D76F4"
+      <ModuleHeader title="BuildCopilot Strategy" subtitle="Define vision, positioning and roadmap." icon={Target} color="var(--primary)"
         action={<GradientBtn onClick={onRun} loading={generating} label={strategy?"Regenerate":"Generate Strategy"}/>}/>
       {!strategy ? <EmptyState icon={Target} title="Generate Product Strategy"
         body="AI will prioritise features, build a Now-Next-Later roadmap, and define success metrics."
@@ -251,9 +263,9 @@ function StrategyScreen({ activeIdea, generating, onRun }: { activeIdea: IdeaRec
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {(["now","next","later"] as const).map((phase) => {
-              const cfg = { now:{dot:"#059669",bg:"#ECFDF5",border:"#A7F3D0",text:"#059669",label:"Now (MVP)"},
-                next:{dot:"#3D76F4",bg:"#EEF0FD",border:"#CACEFA",text:"#3D76F4",label:"Next (Scale)"},
-                later:{dot:"#7C3AED",bg:"#F3F0FF",border:"#DDD6FE",text:"#7C3AED",label:"Later (Vision)"}}[phase];
+              const cfg = { now:{dot:"var(--success)",bg:"var(--success-soft)",border:"var(--success-soft)",text:"var(--success)",label:"Now (MVP)"},
+                next:{dot:"var(--primary)",bg:"var(--primary-soft)",border:"var(--primary-soft)",text:"var(--primary)",label:"Next (Scale)"},
+                later:{dot:"var(--text-muted)",bg:"var(--card-hover)",border:"var(--border)",text:"var(--text-muted)",label:"Later (Vision)"}}[phase];
               return (
                 <Card key={phase} className="p-5">
                   <div className="flex items-center gap-2 mb-4">
@@ -313,12 +325,12 @@ function DraftScreen({ activeIdea, generating, onRun }: { activeIdea: IdeaRecord
     return `# FRD\n\n| ID | Requirement | Priority |\n|---|---|---|\n${req.frd.functionalRequirements.map(r=>`| ${r.id} | ${r.text} | ${r.priority} |`).join("\n")}`;
   }
 
-  if (!activeIdea) return <div><ModuleHeader title="BuildCopilot Draft" subtitle="Create PRDs, BRDs and FRDs." icon={FileText} color="#D97706"/>
+  if (!activeIdea) return <div><ModuleHeader title="BuildCopilot Draft" subtitle="Create PRDs, BRDs and FRDs." icon={FileText} color="var(--warn)"/>
     <EmptyState icon={FileText} title="Capture an idea first" body="Structure your idea in Capture before generating requirements."/></div>;
   const req: RequirementsPack|undefined = activeIdea.requirements;
   return (
     <div>
-      <ModuleHeader title="BuildCopilot Draft" subtitle="Create PRDs, BRDs and FRDs." icon={FileText} color="#D97706"
+      <ModuleHeader title="BuildCopilot Draft" subtitle="Create PRDs, BRDs and FRDs." icon={FileText} color="var(--warn)"
         action={<GradientBtn onClick={onRun} loading={generating} label={req?"Regenerate":"Generate Requirements"}/>}/>
       {!req ? <EmptyState icon={FileText} title="Generate Requirements" body="AI will create a full PRD, BRD and FRD with functional requirements, personas, features, and dependencies."
         action={<GradientBtn onClick={onRun} loading={generating} label="Generate PRD, BRD & FRD"/>}/> : (
@@ -333,15 +345,15 @@ function DraftScreen({ activeIdea, generating, onRun }: { activeIdea: IdeaRecord
                 data-testid="copy-md-btn"
                 className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all"
                 style={{ background: T.card, border: `1px solid ${T.border}`, color: T.muted }}>
-                {copied ? <Check className="h-3.5 w-3.5" style={{ color: "#059669" }}/> : <Copy className="h-3.5 w-3.5"/>}
+                {copied ? <Check className="h-3.5 w-3.5" style={{ color: "var(--success)" }}/> : <Copy className="h-3.5 w-3.5"/>}
                 {copied ? "Copied!" : "Copy MD"}
               </button>
               <div className="flex gap-1 rounded-xl p-1" style={{ background: T.pageBg, border: `1px solid ${T.border}` }} data-testid="draft-tabs">
                 {(["prd","brd","frd"] as const).map(t => (
                   <button key={t} type="button" onClick={() => setTab(t)} data-testid={`tab-${t}`}
                     className="rounded-lg px-4 py-1.5 text-xs font-bold uppercase tracking-[0.1em] transition-all"
-                    style={{ background: tab===t ? "linear-gradient(135deg,#3D76F4,#54AEF5)" : "transparent",
-                             color: tab===t ? "white" : T.muted, boxShadow: tab===t ? "0 2px 8px rgba(61,118,244,0.25)" : "none" }}>
+                    style={{ background: tab===t ? "var(--primary)" : "transparent",
+                             color: tab===t ? "white" : T.muted, boxShadow: tab===t ? "none" : "none" }}>
                     {t}
                   </button>
                 ))}
@@ -409,13 +421,13 @@ function BreakdownScreen({ activeIdea, generating, onRun, onStoryStatusChange }:
   const backlog: BacklogPack|undefined = activeIdea?.backlog;
   const allStories = backlog?.epics.flatMap(e=>e.stories)??[];
   const selEpic = backlog?.epics.find(e=>e.id===selEpicId)??backlog?.epics[0];
-  if (!activeIdea) return <div><ModuleHeader title="BuildCopilot Breakdown" subtitle="Convert PRD into epics and user stories." icon={GitBranch} color="#EA580C"/>
+  if (!activeIdea) return <div><ModuleHeader title="BuildCopilot Breakdown" subtitle="Convert PRD into epics and user stories." icon={GitBranch} color="var(--warn)"/>
     <EmptyState icon={GitBranch} title="Capture an idea first" body="Structure your idea in Capture to unlock backlog generation."/></div>;
-  if (!activeIdea.requirements) return <div><ModuleHeader title="BuildCopilot Breakdown" subtitle="Convert PRD into epics and user stories." icon={GitBranch} color="#EA580C"/>
+  if (!activeIdea.requirements) return <div><ModuleHeader title="BuildCopilot Breakdown" subtitle="Convert PRD into epics and user stories." icon={GitBranch} color="var(--warn)"/>
     <EmptyState icon={FileText} title="Requirements needed" body="Generate PRD, BRD & FRD in the Draft module first."/></div>;
   return (
     <div>
-      <ModuleHeader title="BuildCopilot Breakdown" subtitle="Convert PRD into epics and user stories." icon={GitBranch} color="#EA580C"
+      <ModuleHeader title="BuildCopilot Breakdown" subtitle="Convert PRD into epics and user stories." icon={GitBranch} color="var(--warn)"
         action={<GradientBtn onClick={onRun} loading={generating} label={backlog?"Regenerate":"Generate Stories"}/>}/>
       {!backlog ? <EmptyState icon={GitBranch} title="Generate Backlog" body="AI will derive user stories and epics from your functional requirements."
         action={<GradientBtn onClick={onRun} loading={generating} label="Generate Backlog"/>}/> : (
@@ -429,7 +441,7 @@ function BreakdownScreen({ activeIdea, generating, onRun, onStoryStatusChange }:
                   style={{
                     border: selEpic?.id===epic.id ? `1.5px solid ${T.primary}` : `1px solid ${T.border}`,
                     background: selEpic?.id===epic.id ? T.lavLight : T.card,
-                    boxShadow: selEpic?.id===epic.id ? "0 4px 14px rgba(61,118,244,0.12)" : "none",
+                    boxShadow: selEpic?.id===epic.id ? "none" : "none",
                   }}>
                   <GitBranch className="h-4 w-4 mb-2" style={{ color: selEpic?.id===epic.id ? T.primary : T.muted }}/>
                   <p className="text-xs font-semibold" style={{ color: selEpic?.id===epic.id ? T.primary : T.text }}>{epic.title}</p>
@@ -446,7 +458,7 @@ function BreakdownScreen({ activeIdea, generating, onRun, onStoryStatusChange }:
               const label = col==="todo"?"To Do":col==="in_progress"?"In Progress":"Done";
               const next: StoryStatus = col==="todo"?"in_progress":col==="in_progress"?"done":"todo";
               const colStories = (selEpic?.stories??allStories).filter(s=>(s.status??"todo")===col);
-              const colStyle = {todo:{bg:"#F4F7FE",text:"#64748B"},in_progress:{bg:T.lavLight,text:T.primary},done:{bg:"#ECFDF5",text:"#059669"}}[col];
+              const colStyle = {todo:{bg:"var(--bg)",text:"var(--text-muted)"},in_progress:{bg:T.lavLight,text:T.primary},done:{bg:"var(--success-soft)",text:"var(--success)"}}[col];
               return (
                 <div key={col}>
                   <div className="mb-3 flex items-center justify-between rounded-xl px-3 py-2" style={{ background: colStyle.bg }}>
@@ -490,7 +502,7 @@ function BuildScreen({ activeIdea, onStoryStatusChange }: { activeIdea: IdeaReco
   const pct = stories.length ? Math.round(((done+inp*0.5)/stories.length)*100) : 0;
   return (
     <div>
-      <ModuleHeader title="BuildCopilot Build" subtitle="Track sprint execution, tasks, PRs and commits." icon={Code2} color="#059669"/>
+      <ModuleHeader title="BuildCopilot Build" subtitle="Track sprint execution, tasks, PRs and commits." icon={Code2} color="var(--success)"/>
       {!activeIdea?.backlog ? <EmptyState icon={Code2} title="Generate backlog first" body="The Build module derives sprint tasks from your backlog."/> : (
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
           <Card className="xl:col-span-2 p-6">
@@ -541,7 +553,7 @@ function BuildScreen({ activeIdea, onStoryStatusChange }: { activeIdea: IdeaReco
             <Card className="p-6">
               <h2 className="text-sm font-bold mb-4" style={{ color: T.text }}>Sprint Health</h2>
               <div className="space-y-2.5">
-                {([[CheckCircle2,`${done} stories done`,"#059669"],[Activity,`${inp} in progress`,T.primary],[Clock,`${stories.length-done-inp} to do`,"#D97706"],[AlertTriangle,"0 blockers","#94A3B8"]] as [React.ElementType,string,string][]).map(([Icon,text,c]) => (
+                {([[CheckCircle2,`${done} stories done`,"var(--success)"],[Activity,`${inp} in progress`,T.primary],[Clock,`${stories.length-done-inp} to do`,"var(--warn)"],[AlertTriangle,"0 blockers","var(--text-subtle)"]] as [React.ElementType,string,string][]).map(([Icon,text,c]) => (
                   <div key={text} className="flex items-center gap-3 rounded-xl p-3" style={{ background: T.pageBg, border: `1px solid ${T.border}` }}>
                     <Icon className="h-4 w-4" style={{ color: c }}/><span className="text-sm" style={{ color: T.text }}>{text}</span>
                   </div>
@@ -584,7 +596,7 @@ function VerifyScreen({ activeIdea }: { activeIdea: IdeaRecord|null }) {
   const cov = rows.length ? Math.round((rows.filter(r=>r.status==="complete").length/rows.length)*100) : 0;
   return (
     <div>
-      <ModuleHeader title="BuildCopilot Verify" subtitle="Validate that what was built matches what was planned." icon={ShieldCheck} color="#DC2626"
+      <ModuleHeader title="BuildCopilot Verify" subtitle="Validate that what was built matches what was planned." icon={ShieldCheck} color="var(--error)"
         action={
           <div className="flex items-center gap-4">
             <div className="text-right">
@@ -592,7 +604,7 @@ function VerifyScreen({ activeIdea }: { activeIdea: IdeaRecord|null }) {
               <p className="text-2xl font-bold font-mono gradient-text">{cov}%</p>
             </div>
             <button type="button" className="rounded-xl px-4 py-2.5 text-xs font-semibold transition-all"
-              style={{ background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA" }}>Run Gap Scan</button>
+              style={{ background: "var(--error-soft)", color: "var(--error)", border: "1px solid var(--error-soft)" }}>Run Gap Scan</button>
           </div>
         }/>
       {rows.length===0 ? <EmptyState icon={ShieldCheck} title="Requirements & backlog needed" body="Complete Draft and Breakdown modules to generate the traceability matrix."/> : (
@@ -614,11 +626,11 @@ function VerifyScreen({ activeIdea }: { activeIdea: IdeaRecord|null }) {
                       <td className="px-5 py-3 text-xs font-mono" style={{ color: T.muted }}>{row.story}</td>
                       <td className="px-5 py-3">
                         {row.commit ? <span className="rounded-lg px-2 py-0.5 font-mono text-[10px] font-semibold" style={{ background: T.lavLight, color: T.primary, border: `1px solid ${T.lavender}` }}>{row.commit}</span>
-                          : <span className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase" style={{ background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA" }}>Missing</span>}
+                          : <span className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase" style={{ background: "var(--error-soft)", color: "var(--error)", border: "1px solid var(--error-soft)" }}>Missing</span>}
                       </td>
                       <td className="px-5 py-3">
-                        {row.test ? <span className="rounded-lg px-2 py-0.5 font-mono text-[10px] font-semibold" style={{ background: "#ECFDF5", color: "#059669", border: "1px solid #A7F3D0" }}>{row.test}</span>
-                          : <span className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase" style={{ background: "#FFFBEB", color: "#D97706", border: "1px solid #FDE68A" }}>No Test</span>}
+                        {row.test ? <span className="rounded-lg px-2 py-0.5 font-mono text-[10px] font-semibold" style={{ background: "var(--success-soft)", color: "var(--success)", border: "1px solid var(--success-soft)" }}>{row.test}</span>
+                          : <span className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase" style={{ background: "var(--warn-soft)", color: "var(--warn)", border: "1px solid var(--warn-soft)" }}>No Test</span>}
                       </td>
                       <td className="px-5 py-3"><StatusPill status={row.status}/></td>
                     </tr>
@@ -629,9 +641,9 @@ function VerifyScreen({ activeIdea }: { activeIdea: IdeaRecord|null }) {
           </Card>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
-              {icon:ShieldCheck,label:"Coverage",value:`${cov}%`,note:"requirements traced",bg:"#EEF0FD",c:T.primary},
-              {icon:AlertTriangle,label:"Gaps",value:`${rows.filter(r=>r.status==="missing").length}`,note:"missing artifacts",bg:"#FEF2F2",c:"#DC2626"},
-              {icon:CheckCircle2,label:"Validated",value:`${rows.filter(r=>r.status==="complete").length}`,note:"fully traced",bg:"#ECFDF5",c:"#059669"},
+              {icon:ShieldCheck,label:"Coverage",value:`${cov}%`,note:"requirements traced",bg:"var(--primary-soft)",c:T.primary},
+              {icon:AlertTriangle,label:"Gaps",value:`${rows.filter(r=>r.status==="missing").length}`,note:"missing artifacts",bg:"var(--error-soft)",c:"var(--error)"},
+              {icon:CheckCircle2,label:"Validated",value:`${rows.filter(r=>r.status==="complete").length}`,note:"fully traced",bg:"var(--success-soft)",c:"var(--success)"},
             ].map(s=>(
               <Card key={s.label} className="p-6" style={{ background: s.bg }}>
                 <s.icon className="h-5 w-5 mb-4" style={{ color: s.c }}/>
@@ -659,13 +671,13 @@ function InsightScreen({ activeIdea }: { activeIdea: IdeaRecord|null }) {
   const score = Math.round((done/4)*100);
   const kpis = [
     {icon:Gauge,label:"Product Completeness",value:`${score}%`,note:`${done}/4 phases done`,bg:T.lavLight,c:T.primary},
-    {icon:Activity,label:"Delivery Progress",value:score>75?"On Track":"In Progress",note:"Sprint 1",bg:"#ECFDF5",c:"#059669"},
-    {icon:ShieldCheck,label:"Backlog Health",value:activeIdea?.backlog?`${activeIdea.backlog.epics.length} epics`:"—",note:"stories generated",bg:"#F3F0FF",c:"#7C3AED"},
-    {icon:AlertTriangle,label:"Risk Level",value:score>50?"Low":"Medium",note:"automated scan",bg:"#FFFBEB",c:"#D97706"},
+    {icon:Activity,label:"Delivery Progress",value:score>75?"On Track":"In Progress",note:"Sprint 1",bg:"var(--success-soft)",c:"var(--success)"},
+    {icon:ShieldCheck,label:"Backlog Health",value:activeIdea?.backlog?`${activeIdea.backlog.epics.length} epics`:"—",note:"stories generated",bg:"var(--card-hover)",c:"var(--text-muted)"},
+    {icon:AlertTriangle,label:"Risk Level",value:score>50?"Low":"Medium",note:"automated scan",bg:"var(--warn-soft)",c:"var(--warn)"},
   ];
   return (
     <div>
-      <ModuleHeader title="BuildCopilot Insight" subtitle="Dashboards, delivery health, and architecture diagrams." icon={BarChart3} color="#4F46E5"/>
+      <ModuleHeader title="BuildCopilot Insight" subtitle="Dashboards, delivery health, and architecture diagrams." icon={BarChart3} color="var(--primary)"/>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 mb-5">
         {kpis.map(k=>(
           <Card key={k.label} className="p-6" style={{ background: k.bg }}>
@@ -720,8 +732,8 @@ function AIPanel({ mod }: { mod: ModuleId }) {
            style={{ borderLeft: `1px solid ${T.border}`, background: T.pageBg }}
            aria-label="AI Assistant" data-testid="ai-assistant-panel">
       <div className="mb-5 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-[0_4px_12px_rgba(61,118,244,0.2)]"
-             style={{ background: "linear-gradient(135deg,#3D76F4,#54AEF5)" }}>
+        <div className="w-10 h-10 rounded-2xl flex items-center justify-center "
+             style={{ background: "var(--primary)" }}>
           <Sparkles className="h-4 w-4 text-white"/>
         </div>
         <div>
@@ -823,7 +835,7 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
   }, [activeIdea, refresh]);
 
   return (
-    <div className="min-h-dvh selection:bg-[#EEF0FD]" style={{ backgroundColor: T.pageBg }} data-testid="workspace-root">
+    <div className="min-h-dvh selection:bg-[var(--primary-soft)]" style={{ backgroundColor: T.pageBg }} data-testid="workspace-root">
       <div className="flex h-dvh overflow-hidden">
 
         {/* ── Sidebar ──────────────────────────────────── */}
@@ -833,8 +845,8 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
           <div className="p-5">
             {/* Logo */}
             <div className="mb-7 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(61,118,244,0.25)]"
-                   style={{ background: "linear-gradient(135deg,#3D76F4,#54AEF5)" }}>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center "
+                   style={{ background: "var(--primary)" }}>
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
                   <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -856,23 +868,21 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
 
             {/* Nav */}
             <nav>
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {MODULES.map(m => {
                   const Icon = m.icon; const active = activeModule===m.id;
                   return (
                     <li key={m.id}>
                       <button type="button" onClick={()=>setActiveModule(m.id)}
                         aria-current={active?"page":undefined} data-testid={`nav-${m.id}`}
-                        className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all"
+                        className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors"
                         style={{
-                          background: active ? "linear-gradient(135deg,#3D76F4,#54AEF5)" : "transparent",
-                          color: active ? "white" : T.muted,
-                          boxShadow: active ? "0 4px 14px rgba(61,118,244,0.25)" : "none",
-                        }}>
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                             style={{ background: active ? "rgba(255,255,255,0.2)" : T.pageBg }}>
-                          <Icon className="h-3.5 w-3.5" style={{ color: active ? "white" : m.color }}/>
-                        </div>
+                          background: active ? "var(--card-hover)" : "transparent",
+                          color: active ? "var(--text)" : "var(--text-muted)",
+                        }}
+                        onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = "var(--card-hover)"; }}
+                        onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}>
+                        <Icon className="h-4 w-4 shrink-0" style={{ color: active ? "var(--primary)" : "var(--text-muted)" }}/>
                         {m.label}
                       </button>
                     </li>
@@ -905,7 +915,7 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
                       </button>
                       <button type="button" onClick={e=>{e.stopPropagation();void runDelete(idea.ideaId);}} title="Delete"
                         className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="h-3 w-3" style={{ color: "#DC2626" }}/>
+                        <Trash2 className="h-3 w-3" style={{ color: "var(--error)" }}/>
                       </button>
                     </div>
                   );
@@ -920,7 +930,7 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
               <div className="flex items-center gap-2 text-xs font-bold mb-3" style={{ color: T.primary }}>
                 <Rocket className="h-3.5 w-3.5"/> MVP Status
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(202,206,250,0.3)" }}
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--border)" }}
                    role="progressbar" aria-valuenow={activeIdea?58:10} aria-valuemin={0} aria-valuemax={100}>
                 <div className="h-full rounded-full gradient-primary transition-all" style={{ width: activeIdea?"58%":"10%" }}/>
               </div>
@@ -939,8 +949,8 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
         {/* ── Main ─────────────────────────────────────── */}
         <main className="flex-1 flex flex-col min-w-0" style={{ background: T.pageBg }}>
           {/* Topbar */}
-          <div className="shrink-0 px-6 py-3.5 z-10 backdrop-blur-xl"
-               style={{ background: "rgba(255,255,255,0.85)", borderBottom: `1px solid ${T.border}`, boxShadow: "0 1px 8px rgba(61,118,244,0.05)" }}
+          <div className="shrink-0 px-6 py-3.5 z-10"
+               style={{ background: "var(--bg)", borderBottom: `1px solid ${T.border}` }}
                data-testid="workspace-topbar">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -954,18 +964,19 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
               <div className="flex items-center gap-2.5">
                 {activeIdea && (
                   <div className="flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em]"
-                       style={{ background: "#ECFDF5", border: "1px solid #A7F3D0", color: "#059669" }}
+                       style={{ background: "var(--success-soft)", border: "1px solid var(--success-soft)", color: "var(--success)" }}
                        data-testid="context-loaded-badge">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"/>
+                    <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "var(--success)" }}/>
                     Project Context Loaded
                   </div>
                 )}
                 {health && (
                   <div className="flex items-center gap-2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em]"
-                       style={{ background: health.connected?T.lavLight:"#FFFBEB", border: `1px solid ${health.connected?T.lavender:"#FDE68A"}`, color: health.connected?T.primary:"#D97706" }}>
+                       style={{ background: health.connected?T.lavLight:"var(--warn-soft)", border: `1px solid ${health.connected?T.lavender:"var(--warn-soft)"}`, color: health.connected?T.primary:"var(--warn)" }}>
                     <Gauge className="h-3 w-3"/>{health.mode}
                   </div>
                 )}
+                <ThemeToggle />
               </div>
             </div>
           </div>
@@ -976,12 +987,12 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
               <motion.div initial={{opacity:0,y:-20,scale:0.95}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:-20,scale:0.95}}
                 role="alert" data-testid="error-toast"
                 className="fixed top-6 right-6 z-50 flex items-center gap-4 rounded-2xl p-4 text-sm font-medium"
-                style={{ background: T.card, border: "1px solid #FECACA", color: "#DC2626", boxShadow: "0 8px 32px rgba(220,38,38,0.12)" }}>
-                <div className="rounded-xl p-2" style={{ background: "#FEF2F2" }}>
-                  <AlertCircle className="h-4 w-4" style={{ color: "#DC2626" }}/>
+                style={{ background: T.card, border: "1px solid var(--error-soft)", color: "var(--error)", boxShadow: "var(--shadow)" }}>
+                <div className="rounded-xl p-2" style={{ background: "var(--error-soft)" }}>
+                  <AlertCircle className="h-4 w-4" style={{ color: "var(--error)" }}/>
                 </div>
                 <span>{error}</span>
-                <button type="button" onClick={()=>setError(null)} className="ml-2 rounded-lg p-1.5 transition-colors hover:bg-slate-100">
+                <button type="button" onClick={()=>setError(null)} className="ml-2 rounded-lg p-1.5 transition-colors" style={{ color: "var(--text-muted)" }}>
                   <X className="h-4 w-4" style={{ color: T.muted }}/>
                 </button>
               </motion.div>
