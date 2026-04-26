@@ -256,6 +256,14 @@ body {
 .animate-fade-up { animation: fadeInUp 0.4s ease-out forwards; }
 .animate-load-bar { animation: loadBar 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
+/* AI motion keyframes */
+@keyframes ai-ping {
+    75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes ai-spin {
+    to { transform: rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
