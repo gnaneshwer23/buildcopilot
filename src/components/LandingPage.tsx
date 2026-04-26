@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 
 const IconZap = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -46,12 +47,57 @@ const stages = [
 ];
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
+  const reduceMotion = useReducedMotion();
+
+  const fadeUp = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    transition: { duration: 0.45, ease: [0.23, 1, 0.32, 1] as const },
+    viewport: { once: true, amount: 0.2 },
+  };
+
   return (
     <div className="min-h-dvh bg-[#0A0F15] text-white selection:bg-cyan-500/30">
       <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
-        <div className="absolute -top-24 left-[-12%] h-96 w-96 rounded-full bg-cyan-500/15 blur-[120px]" />
-        <div className="absolute top-[36%] right-[-10%] h-96 w-96 rounded-full bg-blue-500/20 blur-[120px]" />
-        <div className="absolute bottom-[-8%] left-[30%] h-72 w-72 rounded-full bg-emerald-500/10 blur-[120px]" />
+        <motion.div
+          className="absolute -top-24 left-[-12%] h-96 w-96 rounded-full bg-cyan-500/15 blur-[120px]"
+          animate={
+            reduceMotion
+              ? undefined
+              : { y: [0, -18, 0], x: [0, 10, 0], scale: [1, 1.06, 1] }
+          }
+          transition={
+            reduceMotion
+              ? undefined
+              : { duration: 10, repeat: Infinity, ease: "easeInOut" }
+          }
+        />
+        <motion.div
+          className="absolute top-[36%] right-[-10%] h-96 w-96 rounded-full bg-blue-500/20 blur-[120px]"
+          animate={
+            reduceMotion
+              ? undefined
+              : { y: [0, 12, 0], x: [0, -12, 0], scale: [1, 1.04, 1] }
+          }
+          transition={
+            reduceMotion
+              ? undefined
+              : { duration: 12, repeat: Infinity, ease: "easeInOut", delay: 0.6 }
+          }
+        />
+        <motion.div
+          className="absolute bottom-[-8%] left-[30%] h-72 w-72 rounded-full bg-emerald-500/10 blur-[120px]"
+          animate={
+            reduceMotion
+              ? undefined
+              : { y: [0, -10, 0], scale: [1, 1.05, 1] }
+          }
+          transition={
+            reduceMotion
+              ? undefined
+              : { duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.4 }
+          }
+        />
       </div>
 
       <header className="sticky top-0 z-30 border-b border-white/5 bg-[#0A0F15]/80 backdrop-blur-xl">
@@ -87,10 +133,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
       <main className="mx-auto max-w-7xl px-5 pb-24 pt-10 sm:px-8 sm:pt-16 lg:pt-20">
         <section id="platform" className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]" aria-labelledby="hero-heading">
-          <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200">
+          <motion.div {...fadeUp}>
+            <motion.p
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-cyan-200"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            >
               Delivery Intelligence OS
-            </p>
+            </motion.p>
             <h1 id="hero-heading" className="mt-6 text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">
               Move from idea to validated delivery without losing context.
             </h1>
@@ -98,62 +149,112 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               BuildCopilot unifies capture, strategy, requirements, backlog, build and verification into one AI-guided loop so product, engineering and delivery operate from the same source of truth.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <button
+              <motion.button
                 type="button"
                 onClick={onGetStarted}
                 className="rounded-2xl bg-cyan-400 px-7 py-3 text-base font-bold text-[#041019] transition-colors hover:bg-cyan-300"
+                whileHover={reduceMotion ? undefined : { y: -2 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
               >
                 Launch Workspace
-              </button>
-              <a
+              </motion.button>
+              <motion.a
                 href="#loop"
                 className="rounded-2xl border border-white/15 bg-white/5 px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10"
+                whileHover={reduceMotion ? undefined : { y: -2 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.98 }}
               >
                 See the loop
-              </a>
+              </motion.a>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="rounded-3xl border border-white/10 bg-[#0E1620]/70 p-5 shadow-2xl shadow-cyan-900/25 backdrop-blur-xl sm:p-6">
+          <motion.div
+            className="rounded-3xl border border-white/10 bg-[#0E1620]/70 p-5 shadow-2xl shadow-cyan-900/25 backdrop-blur-xl sm:p-6"
+            initial={{ opacity: 0, y: 26 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1], delay: 0.08 }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Live Intelligence Loop</p>
-            <div className="mt-5 space-y-2.5">
+            <motion.div
+              className="mt-5 space-y-2.5"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={{
+                hidden: {},
+                visible: {
+                  transition: { staggerChildren: 0.05 },
+                },
+              }}
+            >
               {stages.map((stage, idx) => (
-                <div key={stage} className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2.5">
+                <motion.div
+                  key={stage}
+                  className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-3 py-2.5"
+                  variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+                  transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+                >
                   <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-400/15 text-[11px] font-bold text-cyan-200">
                     {String(idx + 1).padStart(2, "0")}
                   </span>
                   <span className="text-sm font-semibold text-slate-100">{stage}</span>
-                </div>
+                </motion.div>
               ))}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </section>
 
-        <section id="value" className="mt-20 grid gap-5 md:grid-cols-3">
+        <motion.section
+          id="value"
+          className="mt-20 grid gap-5 md:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: { staggerChildren: 0.08 },
+            },
+          }}
+        >
           {features.map((feature) => (
-            <article key={feature.title} className="group rounded-3xl border border-white/10 bg-[#101A25]/70 p-7 transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-[#122131]">
+            <motion.article
+              key={feature.title}
+              className="group rounded-3xl border border-white/10 bg-[#101A25]/70 p-7 transition-all duration-200 hover:-translate-y-0.5 hover:border-cyan-300/30 hover:bg-[#122131]"
+              variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
+              transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+              whileHover={reduceMotion ? undefined : { y: -4 }}
+            >
               <div className="mb-5 inline-flex rounded-2xl border border-cyan-200/20 bg-cyan-200/10 p-3.5 text-cyan-200">
                 <feature.icon />
               </div>
               <h2 className="text-xl font-semibold text-white">{feature.title}</h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-300">{feature.desc}</p>
-            </article>
+            </motion.article>
           ))}
-        </section>
+        </motion.section>
 
-        <section id="loop" className="mt-20 rounded-3xl border border-white/10 bg-[#0D151F]/75 p-6 sm:p-8">
+        <motion.section
+          id="loop"
+          className="mt-20 rounded-3xl border border-white/10 bg-[#0D151F]/75 p-6 sm:p-8"
+          {...fadeUp}
+        >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">How It Works</p>
               <h2 className="mt-2 text-2xl font-bold text-white sm:text-3xl">One flow. Seven modules. Full delivery continuity.</h2>
             </div>
-            <button
+            <motion.button
               type="button"
               onClick={onGetStarted}
               className="w-full rounded-xl bg-blue-500 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-blue-400 sm:w-auto"
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.98 }}
             >
               Configure workspace
-            </button>
+            </motion.button>
           </div>
 
           <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -163,12 +264,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               "Breakdown generates traceable epics and delivery stories.",
               "Verification closes gaps before release confidence drops.",
             ].map((line) => (
-              <div key={line} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-relaxed text-slate-300">
+              <motion.div
+                key={line}
+                className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-relaxed text-slate-300"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                viewport={{ once: true, amount: 0.3 }}
+              >
                 {line}
-              </div>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
       </main>
 
       <footer className="border-t border-white/10 bg-[#090E14]">
