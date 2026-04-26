@@ -423,3 +423,151 @@ export const initialStructuringRequest: StructuringRequest = {
   rawIdea: "",
   clarifications: [],
 };
+
+// ─── Assistant & State Types ───────────────────────────────────────────────────
+
+export type CaptureOutput = {
+  problem: string;
+  users: string[];
+  goals: string[];
+  value: string;
+};
+
+export type RoadmapItem = {
+  id: string;
+  text: string;
+  column: "now" | "next" | "later";
+};
+
+export type PrdSection = {
+  id: string;
+  title: string;
+  content: string;
+  open: boolean;
+  improving: boolean;
+  color: string;
+};
+
+export type TraceRow = {
+  id: string;
+  requirement: string;
+  epic: string;
+  story: string;
+  linkedCardId: string | null;
+  commit: string | null;
+  testCase: string | null;
+  status: "complete" | "partial" | "missing" | "fail";
+  expanded: boolean;
+};
+
+export type ActionLogEntry = {
+  id: string;
+  actionId: string;
+  label: string;
+  status: "success" | "running" | "error";
+  message: string;
+  timestamp: string;
+};
+
+export type KanbanCard = {
+  id: string;
+  title: string;
+  epic: string;
+  priority: "high" | "medium" | "low";
+  estimate: number;
+  assignee: string;
+  column: "todo" | "inprogress" | "done";
+  acceptance: string[];
+  build?: {
+    commits: string[];
+    completedTaskCount: number;
+  };
+};
+
+export type BuildCopilotSnapshot = {
+  ideaText: string;
+  captureOutput: CaptureOutput;
+  vision: string;
+  usp: string;
+  vp: string;
+  roadmap: RoadmapItem[];
+  prdSections: PrdSection[];
+  prdVersion: number;
+  cards: KanbanCard[];
+  rows: TraceRow[];
+  actionLog?: ActionLogEntry[];
+};
+
+export type AssistantActionRequest = {
+  actionId: string;
+  snapshot: BuildCopilotSnapshot;
+};
+
+export type AssistantActionResponse = {
+  message: string;
+  cards?: KanbanCard[];
+  summary?: string;
+  blockers?: string[];
+};
+
+export function createBuildCopilotSnapshot(input: Partial<BuildCopilotSnapshot>): BuildCopilotSnapshot {
+  return {
+    ideaText: input.ideaText ?? "",
+    captureOutput: input.captureOutput ?? { problem: "", users: [], goals: [], value: "" },
+    vision: input.vision ?? "",
+    usp: input.usp ?? "",
+    vp: input.vp ?? "",
+    roadmap: input.roadmap ?? [],
+    prdSections: input.prdSections ?? [],
+    prdVersion: input.prdVersion ?? 1,
+    cards: input.cards ?? [],
+    rows: input.rows ?? [],
+    actionLog: input.actionLog ?? [],
+  };
+}
+
+export function isBuildCopilotSnapshot(value: unknown): value is BuildCopilotSnapshot {
+  if (!value || typeof value !== "object") return false;
+  const v = value as BuildCopilotSnapshot;
+
+  const hasStrings =
+    typeof v.ideaText === "string" &&
+    typeof v.vision === "string" &&
+    typeof v.usp === "string" &&
+    typeof v.vp === "string";
+
+  const hasNested =
+    v.captureOutput &&
+    typeof v.captureOutput.problem === "string" &&
+    Array.isArray(v.captureOutput.users) &&
+    Array.isArray(v.captureOutput.goals) &&
+    typeof v.captureOutput.value === "string";
+
+  const hasArrays =
+    Array.isArray(v.roadmap) &&
+    Array.isArray(v.prdSections) &&
+    typeof v.prdVersion === "number" &&
+    Array.isArray(v.cards) &&
+    Array.isArray(v.rows);
+
+  if (!hasStrings || !hasNested || !hasArrays) return false;
+
+  // Validate cards
+  for (const card of v.cards) {
+    if (typeof card.id !== "string" || typeof card.title !== "string" || typeof card.estimate !== "number") {
+      return false;
+    }
+    if (card.build && (typeof card.build.completedTaskCount !== "number" || !Array.isArray(card.build.commits))) {
+      return false;
+    }
+  }
+
+  // Validate rows and links
+  const cardIds = new Set(v.cards.map(c => c.id));
+  for (const row of v.rows) {
+    if (typeof row.id !== "string" || typeof row.requirement !== "string") return false;
+    if (row.linkedCardId && !cardIds.has(row.linkedCardId)) return false;
+  }
+
+  return true;
+}
