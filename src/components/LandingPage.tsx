@@ -116,68 +116,139 @@ function Section({ id, children, className = "" }: { id?: string; children: Reac
   );
 }
 
+// ── Hero pipeline preview (one clean system visual on the right) ────────────
+function HeroPreview() {
+  return (
+    <div
+      className="rounded-2xl p-6 lg:p-7"
+      style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+      data-testid="hero-pipeline-preview"
+    >
+      <div className="flex items-center justify-between mb-5">
+        <span className="eyebrow">Delivery loop</span>
+        <span className="status-pill primary">Live</span>
+      </div>
+      <ol className="space-y-2.5">
+        {STAGES.map((stage, i) => {
+          const Icon = stage.icon;
+          const isActive = i === 1; // Strategy step active
+          const isDone = i < 1;
+          return (
+            <li key={stage.id} className="flex items-center gap-3">
+              <span
+                className="flex h-6 w-6 items-center justify-center rounded-md shrink-0 font-mono text-[11px] font-semibold"
+                style={{
+                  background: isActive ? "var(--primary-soft)" : "transparent",
+                  color: isActive ? "var(--primary)" : isDone ? "var(--text)" : "var(--text-subtle)",
+                  border: `1px solid ${isActive ? "var(--primary-soft)" : "var(--border)"}`,
+                }}
+              >
+                {isDone ? <CheckCircle2 className="h-3 w-3" /> : String(i + 1).padStart(2, "0")}
+              </span>
+              <Icon className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--text-subtle)" }} />
+              <span
+                className="text-sm flex-1 min-w-0"
+                style={{
+                  color: isActive ? "var(--text)" : "var(--text-muted)",
+                  fontWeight: isActive ? 600 : 500,
+                }}
+              >
+                {stage.label}
+              </span>
+              <span className="text-xs font-mono hidden sm:inline" style={{ color: "var(--text-subtle)" }}>
+                {stage.output}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 // ── Hero ─────────────────────────────────────────────────────────────────────
 function Hero({ onGetStarted }: { onGetStarted: () => void }) {
   return (
-    <Section className="!py-24 sm:!py-32">
-      <FadeUp>
-        <span className="eyebrow mb-6 block">AI delivery intelligence</span>
-        <h1
-          className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.05] tracking-tight max-w-3xl"
-          style={{ color: "var(--text)" }}
-        >
-          Ship the right product.<br />
-          <span style={{ color: "var(--text-muted)" }}>Not just more code.</span>
-        </h1>
-        <p
-          className="mt-6 max-w-xl text-base leading-relaxed"
-          style={{ color: "var(--text-muted)" }}
-        >
-          BuildCopilot connects idea, strategy, requirements, code and validation in one continuous,
-          traceable loop — so your team always knows what&apos;s built, what&apos;s missing, and what&apos;s
-          ready to ship.
-        </p>
-      </FadeUp>
+    <section className="relative overflow-hidden">
+      {/* Subtle radial — hero only */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-0"
+        style={{
+          height: 640,
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 0%, var(--primary-soft) 0%, transparent 70%)",
+          opacity: 0.7,
+        }}
+      />
+      <div className="relative mx-auto max-w-6xl px-6 py-24 sm:py-28 lg:py-32">
+        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 items-center">
+          <div>
+            <FadeUp>
+              <span className="eyebrow mb-6 block">AI delivery intelligence</span>
+              <h1
+                className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.05] tracking-tight"
+                style={{ color: "var(--text)" }}
+              >
+                Ship the right product.<br />
+                <span style={{ color: "var(--text-muted)" }}>Not just more code.</span>
+              </h1>
+              <p
+                className="mt-6 max-w-xl text-base leading-relaxed"
+                style={{ color: "var(--text-muted)" }}
+              >
+                BuildCopilot connects idea, strategy, requirements, code and validation in one continuous,
+                traceable loop — so your team always knows what&apos;s built, what&apos;s missing, and what&apos;s
+                ready to ship.
+              </p>
+            </FadeUp>
 
-      <FadeUp delay={0.1}>
-        <div className="mt-10 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={onGetStarted}
-            data-testid="hero-launch-btn"
-            className="btn-primary"
-            style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
-          >
-            Start building
-            <ArrowRight className="h-4 w-4" />
-          </button>
-          <a
-            href="#how-it-works"
-            data-testid="hero-see-how-link"
-            className="btn-secondary"
-            style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
-          >
-            See how it works
-          </a>
+            <FadeUp delay={0.1}>
+              <div className="mt-9 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={onGetStarted}
+                  data-testid="hero-launch-btn"
+                  className="btn-primary"
+                  style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
+                >
+                  Start building
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <a
+                  href="#how-it-works"
+                  data-testid="hero-see-how-link"
+                  className="btn-secondary"
+                  style={{ padding: "0.75rem 1.5rem", fontSize: "0.9375rem" }}
+                >
+                  See how it works
+                </a>
+              </div>
+            </FadeUp>
+
+            <FadeUp delay={0.2}>
+              <ul className="mt-10 grid gap-2 sm:grid-cols-2">
+                {[
+                  "Idea → PRD in minutes",
+                  "Requirement → code traceability",
+                  "Gaps detected automatically",
+                  "Validation before release",
+                ].map((p) => (
+                  <li key={p} className="flex items-center gap-2 text-sm" style={{ color: "var(--text-muted)" }}>
+                    <CheckCircle2 className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--success)" }} />
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </FadeUp>
+          </div>
+
+          <FadeUp delay={0.15}>
+            <HeroPreview />
+          </FadeUp>
         </div>
-      </FadeUp>
-
-      <FadeUp delay={0.2}>
-        <ul className="mt-14 grid gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:gap-x-8 lg:gap-y-2">
-          {[
-            "Idea → PRD in minutes",
-            "Requirement → code traceability",
-            "Gaps detected automatically",
-            "Validation before release",
-          ].map((p) => (
-            <li key={p} className="flex items-center gap-2 text-sm" style={{ color: "var(--text-muted)" }}>
-              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--success)" }} />
-              {p}
-            </li>
-          ))}
-        </ul>
-      </FadeUp>
-    </Section>
+      </div>
+    </section>
   );
 }
 
@@ -269,7 +340,7 @@ function Solution() {
   );
 }
 
-// ── How it works ─────────────────────────────────────────────────────────────
+// ── How it works (horizontal flow) ──────────────────────────────────────────
 function HowItWorks() {
   return (
     <div id="how-it-works" className="surface-section">
@@ -288,38 +359,44 @@ function HowItWorks() {
         </FadeUp>
 
         <FadeUp delay={0.1}>
-          <ol className="mt-12 grid gap-px overflow-hidden rounded-xl" style={{ background: "var(--border)", border: "1px solid var(--border)" }}>
-            {STAGES.map((stage, i) => {
-              const Icon = stage.icon;
-              return (
-                <li
-                  key={stage.id}
-                  className="flex items-center gap-4 px-5 py-4"
-                  style={{ background: "var(--card)" }}
-                >
-                  <span
-                    className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-mono font-semibold shrink-0"
-                    style={{
-                      background: "var(--primary-soft)",
-                      color: "var(--primary)",
-                    }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <Icon className="h-4 w-4 shrink-0" style={{ color: "var(--text-muted)" }} />
-                  <span className="text-sm font-medium flex-1 min-w-0" style={{ color: "var(--text)" }}>
-                    {stage.label}
-                  </span>
-                  <span className="text-xs hidden sm:inline" style={{ color: "var(--text-subtle)" }}>
-                    →
-                  </span>
-                  <span className="text-xs font-mono hidden sm:inline" style={{ color: "var(--text-muted)" }}>
-                    {stage.output}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
+          <div className="relative mt-14">
+            {/* Connector line behind icons */}
+            <div
+              aria-hidden
+              className="absolute left-0 right-0 top-5 hidden md:block"
+              style={{ height: 1, background: "var(--border)" }}
+            />
+            <ol className="relative grid grid-cols-2 gap-y-10 gap-x-4 sm:grid-cols-3 md:grid-cols-7 md:gap-x-2">
+              {STAGES.map((stage, i) => {
+                const Icon = stage.icon;
+                return (
+                  <li key={stage.id} className="flex flex-col items-center text-center">
+                    <span
+                      className="relative z-10 flex h-10 w-10 items-center justify-center rounded-lg shrink-0"
+                      style={{
+                        background: "var(--card)",
+                        border: "1px solid var(--border)",
+                      }}
+                    >
+                      <Icon className="h-4 w-4" style={{ color: "var(--text-muted)" }} />
+                    </span>
+                    <span
+                      className="mt-4 text-[10px] font-mono font-semibold tracking-wider"
+                      style={{ color: "var(--text-subtle)" }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="mt-1 text-sm font-semibold" style={{ color: "var(--text)" }}>
+                      {stage.label}
+                    </span>
+                    <span className="mt-1 text-xs" style={{ color: "var(--text-subtle)" }}>
+                      {stage.output}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
         </FadeUp>
       </Section>
     </div>
