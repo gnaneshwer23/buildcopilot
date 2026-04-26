@@ -27,6 +27,8 @@
     --error-soft:   rgba(220, 38, 38, 0.10);
     --warn:         #D97706;
     --warn-soft:    rgba(217, 119, 6, 0.10);
+    --accent:       #7C3AED;
+    --accent-soft:  rgba(124, 58, 237, 0.10);
     --selection:    rgba(37, 99, 235, 0.18);
     --shadow-sm:    0 1px 2px rgba(15, 23, 42, 0.04);
     --shadow:       0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
@@ -54,6 +56,8 @@
     --error-soft:   rgba(239, 68, 68, 0.12);
     --warn:         #F59E0B;
     --warn-soft:    rgba(245, 158, 11, 0.12);
+    --accent:       #A855F7;
+    --accent-soft:  rgba(168, 85, 247, 0.12);
     --selection:    rgba(79, 140, 255, 0.20);
     --shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow:       0 1px 3px rgba(0, 0, 0, 0.4);

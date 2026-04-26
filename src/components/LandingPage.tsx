@@ -7,6 +7,7 @@ import {
   ArrowRight, ArrowUpRight, CheckCircle2, AlertTriangle, XCircle,
   Lightbulb, Target, FileText, GitBranch, Code2, ShieldCheck, BarChart3,
   Sparkles, Zap, Activity, Cpu, Brain, RefreshCcw, Network, Radar, Workflow,
+  Clock, TrendingUp, LayoutGrid, MessageSquare, GitPullRequest, Users,
 } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -47,6 +48,93 @@ function Logo({ size = 28 }: { size?: number }) {
       <svg width={size * 0.42} height={size * 0.42} viewBox="0 0 14 14" fill="none">
         <path d="M2 7L5.5 10.5L12 3.5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MINI-VISUALIZATIONS (reusable inline SVG)
+// ─────────────────────────────────────────────────────────────────────────────
+function Donut({ value, color = "var(--primary)", size = 64, label }: { value: number; color?: string; size?: number; label?: string }) {
+  const r = 26;
+  const c = 2 * Math.PI * r;
+  const offset = c * (1 - value / 100);
+  return (
+    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox="0 0 64 64" className="-rotate-90">
+        <circle cx="32" cy="32" r={r} stroke="var(--border)" strokeWidth="6" fill="none" />
+        <motion.circle
+          cx="32" cy="32" r={r}
+          stroke={color} strokeWidth="6" fill="none" strokeLinecap="round"
+          strokeDasharray={c}
+          initial={{ strokeDashoffset: c }}
+          whileInView={{ strokeDashoffset: offset }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-[13px] font-semibold tabular-nums" style={{ color: "var(--text)" }}>
+        {label ?? `${value}%`}
+      </span>
+    </div>
+  );
+}
+
+function Sparkline({ data, color = "var(--primary)", height = 36 }: { data: number[]; color?: string; height?: number }) {
+  const w = 120;
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data, 0);
+  const range = max - min || 1;
+  const step = w / (data.length - 1);
+  const pts = data.map((v, i) => `${i * step},${height - ((v - min) / range) * (height - 6) - 3}`).join(" ");
+  const areaPts = `0,${height} ${pts} ${w},${height}`;
+  return (
+    <svg viewBox={`0 0 ${w} ${height}`} className="w-full" style={{ height }} aria-hidden>
+      <defs>
+        <linearGradient id={`spark-${color.replace(/[^a-z]/gi, "")}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <polygon points={areaPts} fill={`url(#spark-${color.replace(/[^a-z]/gi, "")})`} />
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      {data.map((v, i) => i === data.length - 1 && (
+        <circle key={i} cx={i * step} cy={height - ((v - min) / range) * (height - 6) - 3} r="2.5" fill={color} />
+      ))}
+    </svg>
+  );
+}
+
+function CoverageBar({ value, color = "var(--success)" }: { value: number; color?: string }) {
+  return (
+    <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: "var(--border)" }}>
+      <motion.div
+        initial={{ width: 0 }}
+        whileInView={{ width: `${value}%` }}
+        viewport={{ once: true }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        style={{ height: "100%", background: color }}
+      />
+    </div>
+  );
+}
+
+function MetricChip({ icon: Icon, value, label, color = "var(--primary)" }: { icon: React.ElementType; value: string; label: string; color?: string }) {
+  return (
+    <div
+      className="flex items-center gap-3 rounded-xl px-4 py-3"
+      style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+    >
+      <div
+        className="flex h-9 w-9 items-center justify-center rounded-lg shrink-0"
+        style={{ background: `color-mix(in oklab, ${color} 14%, transparent)` }}
+      >
+        <Icon className="h-4 w-4" strokeWidth={1.7} style={{ color }} />
+      </div>
+      <div className="min-w-0">
+        <p className="text-base font-semibold tracking-tight" style={{ color: "var(--text)" }}>{value}</p>
+        <p className="text-[11px] font-mono uppercase tracking-[0.14em]" style={{ color: "var(--text-subtle)" }}>{label}</p>
+      </div>
     </div>
   );
 }
@@ -454,6 +542,16 @@ function Hero({ onGetStarted }: { onGetStarted: () => void }) {
             <Constellation />
           </FadeUp>
         </div>
+
+        {/* Hero stats strip */}
+        <FadeUp delay={0.2}>
+          <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <MetricChip icon={Clock}       value="< 10 min"  label="Idea → PRD"          color="var(--primary)" />
+            <MetricChip icon={Network}     value="100%"      label="Traceability"        color="var(--success)" />
+            <MetricChip icon={AlertTriangle} value="Auto"    label="Gap detection"       color="var(--error)" />
+            <MetricChip icon={Brain}       value="24/7"      label="AI delivery monitor" color="var(--accent)" />
+          </div>
+        </FadeUp>
       </div>
     </section>
   );
@@ -631,18 +729,21 @@ function Bento() {
             </div>
           </FadeUp>
 
-          {/* AI Gap Detection */}
+          {/* AI Gap Detection — donut + alert */}
           <FadeUp delay={0.06} className="md:col-span-4">
             <div
               data-testid="bento-card-gap-detection"
               className="h-full rounded-2xl p-6 flex flex-col"
               style={{ background: "var(--card)", border: "1px solid var(--border)" }}
             >
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-lg"
-                style={{ background: "var(--error-soft)" }}
-              >
-                <Brain className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--error)" }} />
+              <div className="flex items-center justify-between">
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-lg"
+                  style={{ background: "var(--error-soft)" }}
+                >
+                  <Brain className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--error)" }} />
+                </div>
+                <Donut value={78} color="var(--error)" size={56} label="78%" />
               </div>
               <h3 className="mt-4 text-base font-semibold" style={{ color: "var(--text)" }}>
                 AI gap detection
@@ -663,20 +764,13 @@ function Bento() {
             </div>
           </FadeUp>
 
-          {/* Live Sync */}
+          {/* Live Sync — sparkline */}
           <FadeUp delay={0.1} className="md:col-span-4">
             <div
               className="h-full rounded-2xl p-6 flex flex-col relative overflow-hidden"
               style={{ background: "var(--card)", border: "1px solid var(--border)" }}
             >
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full"
-                style={{
-                  background: "radial-gradient(circle, var(--primary-soft) 0%, transparent 70%)",
-                }}
-              />
-              <div className="relative">
+              <div className="relative flex items-center justify-between">
                 <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
                   style={{ background: "var(--primary-soft)" }}
@@ -684,23 +778,31 @@ function Bento() {
                   <RefreshCcw
                     className="h-4 w-4"
                     strokeWidth={1.6}
-                    style={{
-                      color: "var(--primary)",
-                      animation: "ai-spin 6s linear infinite",
-                    }}
+                    style={{ color: "var(--primary)", animation: "ai-spin 6s linear infinite" }}
                   />
                 </div>
-                <h3 className="mt-4 text-base font-semibold" style={{ color: "var(--text)" }}>
-                  Live sync
-                </h3>
-                <p className="mt-1.5 text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                  Plugs into Jira, Linear, GitHub, and Confluence. Updates within seconds.
-                </p>
+                <span className="status-pill primary">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--primary)" }} />
+                  Live
+                </span>
+              </div>
+              <h3 className="mt-4 text-base font-semibold" style={{ color: "var(--text)" }}>
+                Live sync
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                Plugs into Jira, Linear, GitHub, and Confluence. Updates within seconds.
+              </p>
+              <div className="mt-auto pt-4">
+                <Sparkline data={[3, 5, 4, 7, 6, 9, 8, 12, 10, 14, 13, 16]} color="var(--primary)" />
+                <div className="mt-1 flex items-center justify-between text-[10px] font-mono" style={{ color: "var(--text-subtle)" }}>
+                  <span>last 12 min</span>
+                  <span style={{ color: "var(--primary)" }}>+34 events</span>
+                </div>
               </div>
             </div>
           </FadeUp>
 
-          {/* AI Copilot */}
+          {/* AI Copilot — chat bubble + chips */}
           <FadeUp delay={0.14} className="md:col-span-6">
             <div
               className="h-full rounded-2xl p-6"
@@ -709,18 +811,32 @@ function Bento() {
               <div className="flex items-center gap-2.5">
                 <div
                   className="flex h-9 w-9 items-center justify-center rounded-lg"
-                  style={{ background: "var(--primary-soft)" }}
+                  style={{ background: "var(--accent-soft)" }}
                 >
-                  <Cpu className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--primary)" }} />
+                  <Cpu className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--accent)" }} />
                 </div>
                 <h3 className="text-base font-semibold" style={{ color: "var(--text)" }}>
                   AI Copilot
                 </h3>
+                <span className="status-pill" style={{ background: "var(--accent-soft)", color: "var(--accent)", border: "1px solid var(--accent-soft)" }}>
+                  GPT
+                </span>
               </div>
               <p className="mt-3 text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
                 Generates PRDs, splits stories, summarises sprint risk for stakeholders.
               </p>
-              <div className="mt-4 grid grid-cols-2 gap-2">
+
+              {/* Faux chat bubble */}
+              <div className="mt-4 rounded-lg px-3 py-2.5" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                <div className="flex items-start gap-2">
+                  <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5" strokeWidth={1.6} style={{ color: "var(--accent)" }} />
+                  <p className="text-[11px] leading-relaxed" style={{ color: "var(--text)" }}>
+                    Splitting <span className="font-mono" style={{ color: "var(--accent)" }}>US-3 Payment</span> into 4 stories with AC, risk = high.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
                 {[
                   { label: "PRD draft",    icon: FileText },
                   { label: "Stories",      icon: GitBranch },
@@ -743,7 +859,7 @@ function Bento() {
             </div>
           </FadeUp>
 
-          {/* Validation */}
+          {/* Validation — coverage bars */}
           <FadeUp delay={0.18} className="md:col-span-6">
             <div
               className="h-full rounded-2xl p-6"
@@ -760,15 +876,23 @@ function Bento() {
                   Validation before release
                 </h3>
               </div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
+              <p className="mt-3 text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                Coverage broken down by stage — gaps surface instantly.
+              </p>
+
+              <div className="mt-5 space-y-3">
                 {[
-                  { v: "100%", l: "traced",   c: "var(--success)" },
-                  { v: "1",    l: "gap",      c: "var(--error)"   },
-                  { v: "24/7", l: "monitor",  c: "var(--primary)" },
+                  { label: "Requirements", value: 100, color: "var(--success)" },
+                  { label: "Stories",      value:  88, color: "var(--primary)" },
+                  { label: "Code",         value:  72, color: "var(--accent)"  },
+                  { label: "Tests",        value:  54, color: "var(--warn)"    },
                 ].map((m) => (
-                  <div key={m.l} className="rounded-lg p-3" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
-                    <p className="text-xl font-semibold tracking-tight" style={{ color: m.c }}>{m.v}</p>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.14em] mt-0.5" style={{ color: "var(--text-subtle)" }}>{m.l}</p>
+                  <div key={m.label}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs" style={{ color: "var(--text)" }}>{m.label}</span>
+                      <span className="text-[11px] font-mono tabular-nums" style={{ color: "var(--text-muted)" }}>{m.value}%</span>
+                    </div>
+                    <CoverageBar value={m.value} color={m.color} />
                   </div>
                 ))}
               </div>
@@ -946,18 +1070,93 @@ function TraceabilityMatrix() {
   return (
     <section id="trace" className="relative py-24 sm:py-32" style={{ background: "var(--surface)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 items-start">
+        <FadeUp>
+          <span className="eyebrow mb-5 block">Traceability matrix</span>
+          <h2
+            className="text-3xl sm:text-4xl font-semibold tracking-tight leading-[1.1] max-w-2xl"
+            style={{ color: "var(--text)" }}
+          >
+            Every line of code, traced to its origin.
+          </h2>
+          <p className="mt-5 text-[15px] leading-relaxed max-w-md" style={{ color: "var(--text-muted)" }}>
+            Real-time proof of what shipped vs what was planned. Gaps surface the moment they appear.
+          </p>
+        </FadeUp>
+
+        {/* KPI cards above matrix */}
+        <FadeUp delay={0.06}>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl p-5 flex items-center gap-4" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <Donut value={87} color="var(--success)" size={64} />
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>Coverage</p>
+                <p className="text-xs mt-0.5" style={{ color: "var(--text-muted)" }}>Reqs → tests</p>
+              </div>
+            </div>
+            <div className="rounded-2xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-[0.16em]" style={{ color: "var(--text-subtle)" }}>Gaps</span>
+                <XCircle className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--error)" }} />
+              </div>
+              <p className="mt-3 text-3xl font-semibold tabular-nums" style={{ color: "var(--error)" }}>2</p>
+              <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Missing tests</p>
+            </div>
+            <div className="rounded-2xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-[0.16em]" style={{ color: "var(--text-subtle)" }}>Velocity</span>
+                <TrendingUp className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--primary)" }} />
+              </div>
+              <p className="mt-3 text-3xl font-semibold tabular-nums" style={{ color: "var(--text)" }}>+42%</p>
+              <Sparkline data={[2, 3, 3, 5, 4, 6, 7, 8, 7, 9, 10, 12]} color="var(--primary)" height={24} />
+            </div>
+            <div className="rounded-2xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-[0.16em]" style={{ color: "var(--text-subtle)" }}>Time saved</span>
+                <Clock className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--accent)" }} />
+              </div>
+              <p className="mt-3 text-3xl font-semibold tabular-nums" style={{ color: "var(--text)" }}>4.2<span className="text-base font-medium" style={{ color: "var(--text-muted)" }}> hrs/wk</span></p>
+              <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Per engineer</p>
+            </div>
+          </div>
+        </FadeUp>
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 items-start">
           <FadeUp>
-            <span className="eyebrow mb-5 block">Traceability matrix</span>
-            <h2
-              className="text-3xl sm:text-4xl font-semibold tracking-tight leading-[1.1]"
-              style={{ color: "var(--text)" }}
-            >
-              Every line of code, traced to its origin.
-            </h2>
-            <p className="mt-5 text-[15px] leading-relaxed max-w-md" style={{ color: "var(--text-muted)" }}>
-              Real-time proof of what shipped vs what was planned. Gaps surface the moment they appear.
-            </p>
+            <div className="rounded-2xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <span className="eyebrow mb-4 block">Live thread</span>
+              <ol className="space-y-3">
+                {[
+                  { l: "Requirement",  v: "User Login",  i: Lightbulb,    c: "var(--primary)" },
+                  { l: "Story",        v: "US-1",        i: GitBranch,    c: "var(--primary)" },
+                  { l: "Code",         v: "auth.ts",     i: Code2,        c: "var(--accent)"  },
+                  { l: "Test",         v: "test_auth.ts",i: ShieldCheck,  c: "var(--success)" },
+                  { l: "Validated",    v: "Passing",     i: CheckCircle2, c: "var(--success)" },
+                ].map((row, i, arr) => {
+                  const I = row.i;
+                  return (
+                    <li key={row.l} className="flex items-start gap-3 relative">
+                      <span
+                        className="flex h-7 w-7 items-center justify-center rounded-md shrink-0"
+                        style={{ background: `color-mix(in oklab, ${row.c} 14%, transparent)` }}
+                      >
+                        <I className="h-3.5 w-3.5" strokeWidth={1.6} style={{ color: row.c }} />
+                      </span>
+                      <div className="flex-1 min-w-0 pb-2">
+                        <p className="text-[10px] font-mono uppercase tracking-[0.14em]" style={{ color: "var(--text-subtle)" }}>{row.l}</p>
+                        <p className="text-sm font-medium" style={{ color: "var(--text)" }}>{row.v}</p>
+                      </div>
+                      {i < arr.length - 1 && (
+                        <span
+                          aria-hidden
+                          className="absolute left-[13px] top-7 w-px"
+                          style={{ height: "calc(100% - 1.75rem)", background: "var(--border)" }}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
           </FadeUp>
 
           <FadeUp delay={0.08}>
@@ -1003,15 +1202,9 @@ function TraceabilityMatrix() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BUILT FOR
+// BUILT FOR — each card with a unique mini-visual
 // ─────────────────────────────────────────────────────────────────────────────
 function BuiltFor() {
-  const items = [
-    { label: "Founders",          desc: "Ship with confidence. Build the right thing, prove it, then release.", icon: Zap },
-    { label: "Product Managers",  desc: "Turn ideas into traceable PRDs without blank-page paralysis.",         icon: Target },
-    { label: "Engineering Leads", desc: "See exactly which requirements map to code, tests and PRs.",           icon: Code2 },
-    { label: "Delivery Teams",    desc: "Real-time visibility across the whole chain. No more status meetings.",icon: Radar },
-  ];
   return (
     <section className="relative py-24 sm:py-32" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="mx-auto max-w-7xl px-6">
@@ -1026,26 +1219,121 @@ function BuiltFor() {
         </FadeUp>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((it, i) => {
-            const I = it.icon;
-            return (
-              <FadeUp key={it.label} delay={i * 0.05}>
-                <div
-                  className="h-full rounded-2xl p-6"
-                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-                >
-                  <div
-                    className="flex h-9 w-9 items-center justify-center rounded-lg mb-5"
-                    style={{ background: "var(--primary-soft)" }}
-                  >
-                    <I className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--primary)" }} />
-                  </div>
-                  <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{it.label}</p>
-                  <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{it.desc}</p>
+          {/* Founders — velocity sparkline */}
+          <FadeUp>
+            <div className="h-full rounded-2xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: "var(--primary-soft)" }}>
+                  <Zap className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--primary)" }} />
                 </div>
-              </FadeUp>
-            );
-          })}
+                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>Founders</p>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                Ship with confidence. Build the right thing, prove it, then release.
+              </p>
+              <div className="mt-5 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.14em]" style={{ color: "var(--text-subtle)" }}>Ship velocity</span>
+                  <span className="text-xs font-semibold" style={{ color: "var(--primary)" }}>+38%</span>
+                </div>
+                <Sparkline data={[2, 3, 2, 4, 3, 5, 4, 6, 7, 8, 9, 11]} color="var(--primary)" height={32} />
+              </div>
+            </div>
+          </FadeUp>
+
+          {/* Product Managers — PRD mini-doc */}
+          <FadeUp delay={0.05}>
+            <div className="h-full rounded-2xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: "var(--accent-soft)" }}>
+                  <Target className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--accent)" }} />
+                </div>
+                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>Product Managers</p>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                Turn ideas into traceable PRDs without blank-page paralysis.
+              </p>
+              <div className="mt-5 rounded-lg p-3 space-y-2" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                {[
+                  { label: "Problem statement", done: true },
+                  { label: "User stories",       done: true },
+                  { label: "Acceptance criteria",done: true },
+                  { label: "Risk & mitigation",  done: false },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-center gap-2">
+                    <CheckCircle2 className="h-3 w-3 shrink-0" strokeWidth={2} style={{ color: row.done ? "var(--success)" : "var(--text-subtle)" }} />
+                    <span className="text-[11px]" style={{ color: row.done ? "var(--text)" : "var(--text-subtle)" }}>{row.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeUp>
+
+          {/* Engineering Leads — code traceability mini-graph */}
+          <FadeUp delay={0.1}>
+            <div className="h-full rounded-2xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: "var(--primary-soft)" }}>
+                  <Code2 className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--primary)" }} />
+                </div>
+                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>Engineering Leads</p>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                See exactly which requirements map to code, tests and PRs.
+              </p>
+              <div className="mt-5 rounded-lg p-3" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                <svg viewBox="0 0 200 50" className="w-full h-auto" aria-hidden>
+                  {/* tiny commit-graph vis */}
+                  {[10, 30, 50, 80, 110, 140, 170, 190].map((x, i) => (
+                    <g key={x}>
+                      <circle cx={x} cy={25} r="3" fill={i % 3 === 1 ? "var(--accent)" : "var(--primary)"} />
+                      {i < 7 && <line x1={x + 3} y1={25} x2={x + 17} y2={25} stroke="var(--border-strong)" strokeWidth="1" />}
+                    </g>
+                  ))}
+                  <circle cx={50} cy={10} r="2.5" fill="var(--success)" />
+                  <line x1={50} y1={13} x2={50} y2={22} stroke="var(--border-strong)" strokeWidth="1" />
+                  <circle cx={140} cy={40} r="2.5" fill="var(--error)" />
+                  <line x1={140} y1={28} x2={140} y2={37} stroke="var(--border-strong)" strokeWidth="1" />
+                </svg>
+                <div className="flex items-center justify-between mt-2 text-[10px] font-mono" style={{ color: "var(--text-subtle)" }}>
+                  <span>main</span>
+                  <span><GitPullRequest className="inline h-3 w-3 mr-1" strokeWidth={1.6} />4 PRs traced</span>
+                </div>
+              </div>
+            </div>
+          </FadeUp>
+
+          {/* Delivery Teams — live monitor */}
+          <FadeUp delay={0.15}>
+            <div className="h-full rounded-2xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg" style={{ background: "var(--success-soft)" }}>
+                  <Radar className="h-4 w-4" strokeWidth={1.6} style={{ color: "var(--success)" }} />
+                </div>
+                <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>Delivery Teams</p>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                Real-time visibility across the whole chain. No more status meetings.
+              </p>
+              <div className="mt-5 rounded-lg p-3 space-y-2" style={{ background: "var(--bg)", border: "1px solid var(--border)" }}>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-[11px]" style={{ color: "var(--text)" }}>
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full rounded-full" style={{ background: "var(--success)", opacity: 0.7, animation: "ai-ping 1.6s ease-out infinite" }} />
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ background: "var(--success)" }} />
+                    </span>
+                    Sprint 12
+                  </span>
+                  <span className="text-[10px] font-mono" style={{ color: "var(--success)" }}>on track</span>
+                </div>
+                <CoverageBar value={68} color="var(--success)" />
+                <div className="flex items-center justify-between text-[10px] font-mono" style={{ color: "var(--text-subtle)" }}>
+                  <span>17 / 25 stories</span>
+                  <span>3 days left</span>
+                </div>
+              </div>
+            </div>
+          </FadeUp>
         </div>
       </div>
     </section>
