@@ -1351,7 +1351,7 @@ export function WorkspaceClient({ userProfile }: WorkspaceClientProps) {
         <motion.div
           animate={{
             background: activeModule 
-              ? `radial-gradient(circle at 50% 50%, ${activeModule.id === 'capture' ? '#7c3aed11' : activeModule.id === 'strategy' ? '#2563eb11' : '#05966911'} 0%, transparent 70%)`
+              ? `radial-gradient(circle at 50% 50%, ${activeModule === 'capture' ? '#7c3aed11' : activeModule === 'strategy' ? '#2563eb11' : '#05966911'} 0%, transparent 70%)`
               : 'radial-gradient(circle at 50% 50%, #2563eb0a 0%, transparent 70%)'
           }}
           className="absolute inset-0 transition-all duration-1000 ease-in-out"
